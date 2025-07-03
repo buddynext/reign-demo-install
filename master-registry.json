@@ -1,0 +1,1040 @@
+{
+  "plugin_name": "Reign Demo",
+  "version": "1.0.0",
+  "theme": "Reign Theme",
+  "last_updated": "2025-01-03T00:00:00Z",
+  "demos_count": 39,
+  "base_url": "https://installer.wbcomdesigns.com",
+  "demos": [
+    {
+      "id": "reign-beginners-school",
+      "name": "Beginners School",
+      "slug": "beginners-school",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/beginners-school/",
+      "admin_url": "https://installer.wbcomdesigns.com/beginners-school/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/beginners-school.jpg",
+      "description": "Educational platform for beginners with Reign Theme",
+      "features": ["BuddyPress", "LearnDash", "Forums", "Groups"],
+      "manifest_url": "https://installer.wbcomdesigns.com/beginners-school/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/beginners-school/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/beginners-school/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/beginners-school/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "school", "learning", "buddypress"]
+    },
+    {
+      "id": "reign-buddypress-community",
+      "name": "BuddyPress Community",
+      "slug": "buddypress-community",
+      "category": "community",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/buddypress-community/",
+      "admin_url": "https://installer.wbcomdesigns.com/buddypress-community/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/buddypress-community.jpg",
+      "description": "Classic BuddyPress community with Reign Theme",
+      "features": ["BuddyPress", "Activity Feeds", "Groups", "Members Directory"],
+      "manifest_url": "https://installer.wbcomdesigns.com/buddypress-community/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/buddypress-community/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/buddypress-community/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/buddypress-community/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["community", "social", "buddypress", "networking"]
+    },
+    {
+      "id": "reign-jobmate",
+      "name": "BuddyPress Jobmate",
+      "slug": "jobmate",
+      "category": "job-board",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/jobmate/",
+      "admin_url": "https://installer.wbcomdesigns.com/jobmate/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/jobmate.jpg",
+      "description": "Job board community with BuddyPress integration",
+      "features": ["BuddyPress", "WP Job Manager", "Resume Manager", "Company Profiles"],
+      "manifest_url": "https://installer.wbcomdesigns.com/jobmate/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/jobmate/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/jobmate/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/jobmate/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["jobs", "recruitment", "career", "buddypress"]
+    },
+    {
+      "id": "reign-buddyboss-clone",
+      "name": "BuddyPress Reign Clone",
+      "slug": "buddyboss-community",
+      "category": "community",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/buddyboss-community/",
+      "admin_url": "https://installer.wbcomdesigns.com/buddyboss-community/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/buddyboss-community.jpg",
+      "description": "BuddyBoss style community with Reign Theme",
+      "features": ["BuddyPress", "Social Groups", "Activity Feeds", "Member Profiles"],
+      "manifest_url": "https://installer.wbcomdesigns.com/buddyboss-community/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/buddyboss-community/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/buddyboss-community/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/buddyboss-community/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["community", "social", "buddypress", "buddyboss-style"]
+    },
+    {
+      "id": "reign-cbd-store",
+      "name": "CBD Store",
+      "slug": "cbdstore",
+      "category": "ecommerce",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/cbdstore/",
+      "admin_url": "https://installer.wbcomdesigns.com/cbdstore/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/cbdstore.jpg",
+      "description": "CBD products store with WooCommerce",
+      "features": ["WooCommerce", "Product Catalog", "Shopping Cart", "Payment Gateway"],
+      "manifest_url": "https://installer.wbcomdesigns.com/cbdstore/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/cbdstore/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/cbdstore/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/cbdstore/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["ecommerce", "store", "cbd", "woocommerce"]
+    },
+    {
+      "id": "reign-church-community",
+      "name": "Church Community",
+      "slug": "church-community",
+      "category": "nonprofit",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/church-community/",
+      "admin_url": "https://installer.wbcomdesigns.com/church-community/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/church-community.jpg",
+      "description": "Church and religious community platform",
+      "features": ["BuddyPress", "Events", "Sermons", "Donations"],
+      "manifest_url": "https://installer.wbcomdesigns.com/church-community/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/church-community/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/church-community/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/church-community/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["church", "religious", "community", "nonprofit"]
+    },
+    {
+      "id": "reign-dokan-interior",
+      "name": "Dokan Interior Decorators",
+      "slug": "dokan-interior-decorators",
+      "category": "marketplace",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/dokan-interior-decorators/",
+      "admin_url": "https://installer.wbcomdesigns.com/dokan-interior-decorators/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/dokan-interior-decorators.jpg",
+      "description": "Interior design marketplace with Dokan",
+      "features": ["Dokan", "Multi-vendor", "WooCommerce", "Vendor Dashboard"],
+      "manifest_url": "https://installer.wbcomdesigns.com/dokan-interior-decorators/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/dokan-interior-decorators/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/dokan-interior-decorators/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/dokan-interior-decorators/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["marketplace", "dokan", "interior-design", "multivendor"]
+    },
+    {
+      "id": "reign-geolocation-directory",
+      "name": "Geolocation Directory",
+      "slug": "geolocation-directory",
+      "category": "directory",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/geolocation-directory/",
+      "admin_url": "https://installer.wbcomdesigns.com/geolocation-directory/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/geolocation-directory.jpg",
+      "description": "Location-based business directory",
+      "features": ["GeoDirectory", "Maps", "Business Listings", "Reviews"],
+      "manifest_url": "https://installer.wbcomdesigns.com/geolocation-directory/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/geolocation-directory/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/geolocation-directory/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/geolocation-directory/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["directory", "geolocation", "business", "maps"]
+    },
+    {
+      "id": "reign-jobmate-wp-job-manager",
+      "name": "JobMate WP Job Manager",
+      "slug": "reign-jobmate-bb-platform",
+      "category": "job-board",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-jobmate-bb-platform/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-jobmate-bb-platform/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-jobmate-bb-platform.jpg",
+      "description": "Job board with BuddyBoss Platform integration",
+      "features": ["BuddyBoss Platform", "WP Job Manager", "Resume Manager", "Applications"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-jobmate-bb-platform/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-jobmate-bb-platform/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-jobmate-bb-platform/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-jobmate-bb-platform/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["jobs", "recruitment", "buddyboss", "career"]
+    },
+    {
+      "id": "reign-learnmate-education",
+      "name": "LearnMate Education",
+      "slug": "learndash-education",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/learndash-education/",
+      "admin_url": "https://installer.wbcomdesigns.com/learndash-education/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/learndash-education.jpg",
+      "description": "Educational platform with LearnDash LMS",
+      "features": ["LearnDash", "Course Management", "Quizzes", "Certificates"],
+      "manifest_url": "https://installer.wbcomdesigns.com/learndash-education/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/learndash-education/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/learndash-education/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/learndash-education/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "lms", "learndash", "courses"]
+    },
+    {
+      "id": "reign-learnmate-learndash",
+      "name": "Learnmate LearnDash",
+      "slug": "learnmate-learndash",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/learnmate-learndash/",
+      "admin_url": "https://installer.wbcomdesigns.com/learnmate-learndash/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/learnmate-learndash.jpg",
+      "description": "Advanced LearnDash education platform",
+      "features": ["LearnDash", "BuddyPress", "Course Forums", "Gamification"],
+      "manifest_url": "https://installer.wbcomdesigns.com/learnmate-learndash/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/learnmate-learndash/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/learnmate-learndash/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/learnmate-learndash/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "lms", "learndash", "social-learning"]
+    },
+    {
+      "id": "reign-bb-platform-learndash-01",
+      "name": "My Blog (4)",
+      "slug": "reign-bb-platform-learndash-01",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-bb-platform-learndash-01/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-bb-platform-learndash-01/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-bb-platform-learndash-01.jpg",
+      "description": "BuddyBoss Platform with LearnDash integration",
+      "features": ["BuddyBoss Platform", "LearnDash", "Social Learning", "Groups"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-learndash-01/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-learndash-01/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-learndash-01/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-bb-platform-learndash-01/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "buddyboss", "learndash", "blog"]
+    },
+    {
+      "id": "reign-life-coach-teaching",
+      "name": "Online Life Coach Teaching",
+      "slug": "online-teaching01",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/online-teaching01/",
+      "admin_url": "https://installer.wbcomdesigns.com/online-teaching01/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/online-teaching01.jpg",
+      "description": "Life coaching and online teaching platform",
+      "features": ["Online Courses", "Coaching Sessions", "Webinars", "Membership"],
+      "manifest_url": "https://installer.wbcomdesigns.com/online-teaching01/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/online-teaching01/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/online-teaching01/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/online-teaching01/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "coaching", "online-teaching", "life-coach"]
+    },
+    {
+      "id": "reign-online-teaching",
+      "name": "Online Teaching",
+      "slug": "online-teaching",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/online-teaching/",
+      "admin_url": "https://installer.wbcomdesigns.com/online-teaching/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/online-teaching.jpg",
+      "description": "Complete online teaching solution",
+      "features": ["LMS", "Video Lessons", "Assignments", "Student Portal"],
+      "manifest_url": "https://installer.wbcomdesigns.com/online-teaching/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/online-teaching/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/online-teaching/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/online-teaching/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "teaching", "online-courses", "lms"]
+    },
+    {
+      "id": "reign-peepso-community",
+      "name": "PeepSo Community",
+      "slug": "peepso-community",
+      "category": "community",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/peepso-community/",
+      "admin_url": "https://installer.wbcomdesigns.com/peepso-community/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/peepso-community.jpg",
+      "description": "Social community with PeepSo integration",
+      "features": ["PeepSo", "Activity Stream", "User Profiles", "Photos & Videos"],
+      "manifest_url": "https://installer.wbcomdesigns.com/peepso-community/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/peepso-community/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/peepso-community/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/peepso-community/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["community", "social", "peepso", "networking"]
+    },
+    {
+      "id": "reign-church-charity",
+      "name": "Reign Church Charity",
+      "slug": "reign-church-charity",
+      "category": "nonprofit",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-church-charity/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-church-charity/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-church-charity.jpg",
+      "description": "Church and charity organization platform",
+      "features": ["Donations", "Events", "Volunteer Management", "Sermons"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-church-charity/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-church-charity/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-church-charity/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-church-charity/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["nonprofit", "charity", "church", "donations"]
+    },
+    {
+      "id": "reign-bb-platform-tutorlms",
+      "name": "Reign BuddyBoss Platform TutorLMS",
+      "slug": "reign-bb-platform-tutorlms",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-bb-platform-tutorlms/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-bb-platform-tutorlms/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-bb-platform-tutorlms.jpg",
+      "description": "BuddyBoss Platform with TutorLMS integration",
+      "features": ["BuddyBoss Platform", "TutorLMS", "Course Builder", "Student Dashboard"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-tutorlms/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-tutorlms/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-tutorlms/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-bb-platform-tutorlms/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "buddyboss", "tutorlms", "courses"]
+    },
+    {
+      "id": "reign-bb-platform",
+      "name": "Reign BuddyBoss Platform",
+      "slug": "reign-bb-platform",
+      "category": "community",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-bb-platform/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-bb-platform/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-bb-platform.jpg",
+      "description": "Core BuddyBoss Platform community",
+      "features": ["BuddyBoss Platform", "Social Groups", "Activity Feeds", "Forums"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-bb-platform/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["community", "buddyboss", "social", "platform"]
+    },
+    {
+      "id": "reign-bb-platform-dark",
+      "name": "Reign BuddyBoss Platform Dark",
+      "slug": "reign-bb-platform-dark",
+      "category": "community",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-bb-platform-dark/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-bb-platform-dark/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-bb-platform-dark.jpg",
+      "description": "Dark theme BuddyBoss Platform community",
+      "features": ["BuddyBoss Platform", "Dark Mode", "Social Features", "Modern UI"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-dark/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-dark/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-dark/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-bb-platform-dark/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["community", "buddyboss", "dark-theme", "modern"]
+    },
+    {
+      "id": "reign-dokan-bb-platform",
+      "name": "Reign BuddyBoss Platform Dokan",
+      "slug": "reign-dokan-bb-platform",
+      "category": "marketplace",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-dokan-bb-platform/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-dokan-bb-platform/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-dokan-bb-platform.jpg",
+      "description": "BuddyBoss Platform with Dokan marketplace",
+      "features": ["BuddyBoss Platform", "Dokan", "Multi-vendor", "Social Commerce"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-dokan-bb-platform/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-dokan-bb-platform/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-dokan-bb-platform/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-dokan-bb-platform/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["marketplace", "buddyboss", "dokan", "social-commerce"]
+    },
+    {
+      "id": "reign-bb-platform-learndash",
+      "name": "Reign BuddyBoss Platform LearnDash",
+      "slug": "reign-bb-platform-learndash",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-bb-platform-learndash/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-bb-platform-learndash/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-bb-platform-learndash.jpg",
+      "description": "BuddyBoss Platform with LearnDash LMS",
+      "features": ["BuddyBoss Platform", "LearnDash", "Social Learning", "Course Community"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-learndash/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-learndash/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-learndash/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-bb-platform-learndash/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "buddyboss", "learndash", "social-learning"]
+    },
+    {
+      "id": "reign-bb-platform-sensei",
+      "name": "Reign BuddyBoss Platform Sensei",
+      "slug": "reign-bb-platform-sensei",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-bb-platform-sensei/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-bb-platform-sensei/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-bb-platform-sensei.jpg",
+      "description": "BuddyBoss Platform with Sensei LMS",
+      "features": ["BuddyBoss Platform", "Sensei LMS", "Course Management", "Student Progress"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-sensei/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-sensei/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-bb-platform-sensei/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-bb-platform-sensei/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "buddyboss", "sensei", "lms"]
+    },
+    {
+      "id": "reign-wcfm-bb-platform",
+      "name": "Reign BuddyBoss Platform WCFM",
+      "slug": "reign-wcfm-bb-platform",
+      "category": "marketplace",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-wcfm-bb-platform/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-wcfm-bb-platform/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-wcfm-bb-platform.jpg",
+      "description": "BuddyBoss Platform with WCFM marketplace",
+      "features": ["BuddyBoss Platform", "WCFM", "Vendor Dashboard", "Social Marketplace"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-wcfm-bb-platform/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-wcfm-bb-platform/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-wcfm-bb-platform/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-wcfm-bb-platform/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["marketplace", "buddyboss", "wcfm", "multivendor"]
+    },
+    {
+      "id": "reign-buddypress",
+      "name": "Reign BuddyPress",
+      "slug": "reign-buddypress",
+      "category": "community",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-buddypress/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-buddypress/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-buddypress.jpg",
+      "description": "Classic BuddyPress community with Reign Theme",
+      "features": ["BuddyPress", "Activity Streams", "Member Profiles", "Groups"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-buddypress/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-buddypress/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-buddypress/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-buddypress/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["community", "buddypress", "social", "networking"]
+    },
+    {
+      "id": "reign-buddypress-dark",
+      "name": "Reign BuddyPress Dark",
+      "slug": "reign-buddypress-dark",
+      "category": "community",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-buddypress-dark/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-buddypress-dark/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-buddypress-dark.jpg",
+      "description": "Dark theme BuddyPress community",
+      "features": ["BuddyPress", "Dark Mode", "Modern Design", "Social Features"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-buddypress-dark/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-buddypress-dark/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-buddypress-dark/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-buddypress-dark/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["community", "buddypress", "dark-theme", "social"]
+    },
+    {
+      "id": "reign-dating",
+      "name": "Reign Dating",
+      "slug": "reign-dating",
+      "category": "dating",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-dating/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-dating/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-dating.jpg",
+      "description": "Dating and matchmaking platform",
+      "features": ["BuddyPress", "Member Matching", "Private Messaging", "Profile Browse"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-dating/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-dating/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-dating/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-dating/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["dating", "matchmaking", "social", "buddypress"]
+    },
+    {
+      "id": "reign-edd-toolkit",
+      "name": "Reign EDD Toolkit",
+      "slug": "reign-directory",
+      "category": "ecommerce",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-directory/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-directory/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-directory.jpg",
+      "description": "Digital downloads marketplace with Easy Digital Downloads",
+      "features": ["Easy Digital Downloads", "Digital Products", "License Keys", "Software Sales"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-directory/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-directory/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-directory/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-directory/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["ecommerce", "digital-downloads", "edd", "marketplace"]
+    },
+    {
+      "id": "reign-lifter-lms",
+      "name": "Reign Lifter LMS",
+      "slug": "reign-lifterlms",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-lifterlms/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-lifterlms/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-lifterlms.jpg",
+      "description": "Education platform with LifterLMS",
+      "features": ["LifterLMS", "Course Builder", "Memberships", "Achievements"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-lifterlms/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-lifterlms/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-lifterlms/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-lifterlms/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "lifterlms", "courses", "memberships"]
+    },
+    {
+      "id": "reign-lifterlms-learnmate",
+      "name": "Reign LifterLMS (LearnMate)",
+      "slug": "learnmate-lifterlms",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/learnmate-lifterlms/",
+      "admin_url": "https://installer.wbcomdesigns.com/learnmate-lifterlms/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/learnmate-lifterlms.jpg",
+      "description": "LearnMate style education with LifterLMS",
+      "features": ["LifterLMS", "BuddyPress", "Social Learning", "Gamification"],
+      "manifest_url": "https://installer.wbcomdesigns.com/learnmate-lifterlms/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/learnmate-lifterlms/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/learnmate-lifterlms/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/learnmate-lifterlms/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "lifterlms", "social-learning", "learnmate"]
+    },
+    {
+      "id": "reign-multivendor",
+      "name": "Reign Multivendor",
+      "slug": "reign-multivendor",
+      "category": "marketplace",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-multivendor/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-multivendor/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-multivendor.jpg",
+      "description": "Multi-vendor marketplace platform",
+      "features": ["Multi-vendor", "WooCommerce", "Vendor Dashboard", "Commission System"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-multivendor/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-multivendor/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-multivendor/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-multivendor/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["marketplace", "multivendor", "woocommerce", "vendors"]
+    },
+    {
+      "id": "reign-sensei-lms",
+      "name": "Reign Sensei LMS",
+      "slug": "reign-sensei-lms",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-sensei-lms/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-sensei-lms/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-sensei-lms.jpg",
+      "description": "Education platform with Sensei LMS",
+      "features": ["Sensei LMS", "WooCommerce Integration", "Course Analytics", "Quizzes"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-sensei-lms/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-sensei-lms/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-sensei-lms/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-sensei-lms/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "sensei", "lms", "woocommerce"]
+    },
+    {
+      "id": "reign-social-photography",
+      "name": "Reign Social Photography",
+      "slug": "reign-social-photography",
+      "category": "portfolio",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-social-photography/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-social-photography/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-social-photography.jpg",
+      "description": "Photography community and portfolio platform",
+      "features": ["BuddyPress", "Photo Galleries", "Portfolio", "Social Sharing"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-social-photography/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-social-photography/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-social-photography/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-social-photography/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["portfolio", "photography", "social", "gallery"]
+    },
+    {
+      "id": "reign-tutor-lms",
+      "name": "Reign Tutor LMS",
+      "slug": "reign-tutor-lms",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/reign-tutor-lms/",
+      "admin_url": "https://installer.wbcomdesigns.com/reign-tutor-lms/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/reign-tutor-lms.jpg",
+      "description": "Education platform with Tutor LMS",
+      "features": ["Tutor LMS", "Course Builder", "Student Dashboard", "Gradebook"],
+      "manifest_url": "https://installer.wbcomdesigns.com/reign-tutor-lms/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/reign-tutor-lms/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/reign-tutor-lms/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/reign-tutor-lms/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "tutorlms", "courses", "learning"]
+    },
+    {
+      "id": "reign-social-learning",
+      "name": "Social Community Learning",
+      "slug": "buddypress-social-learning",
+      "category": "education",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/buddypress-social-learning/",
+      "admin_url": "https://installer.wbcomdesigns.com/buddypress-social-learning/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/buddypress-social-learning.jpg",
+      "description": "Social learning community with BuddyPress",
+      "features": ["BuddyPress", "LMS Integration", "Study Groups", "Collaborative Learning"],
+      "manifest_url": "https://installer.wbcomdesigns.com/buddypress-social-learning/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/buddypress-social-learning/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/buddypress-social-learning/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/buddypress-social-learning/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["education", "social-learning", "buddypress", "community"]
+    },
+    {
+      "id": "reign-storemate-dokan",
+      "name": "StoreMate Dokan",
+      "slug": "storemate-dokan",
+      "category": "marketplace",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/storemate-dokan/",
+      "admin_url": "https://installer.wbcomdesigns.com/storemate-dokan/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/storemate-dokan.jpg",
+      "description": "StoreMate marketplace with Dokan",
+      "features": ["Dokan", "Multi-vendor", "Store Management", "Commission System"],
+      "manifest_url": "https://installer.wbcomdesigns.com/storemate-dokan/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/storemate-dokan/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/storemate-dokan/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/storemate-dokan/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["marketplace", "dokan", "storemate", "multivendor"]
+    },
+    {
+      "id": "reign-storemate-wc-vendors",
+      "name": "StoreMate WC Vendors",
+      "slug": "storemate-wc-vendors",
+      "category": "marketplace",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/storemate-wc-vendors/",
+      "admin_url": "https://installer.wbcomdesigns.com/storemate-wc-vendors/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/storemate-wc-vendors.jpg",
+      "description": "StoreMate marketplace with WC Vendors",
+      "features": ["WC Vendors", "Multi-vendor", "Vendor Dashboard", "Product Management"],
+      "manifest_url": "https://installer.wbcomdesigns.com/storemate-wc-vendors/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/storemate-wc-vendors/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/storemate-wc-vendors/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/storemate-wc-vendors/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["marketplace", "wc-vendors", "storemate", "multivendor"]
+    },
+    {
+      "id": "reign-storemate-wc-vendors-2",
+      "name": "StoreMate WC Vendors (2)",
+      "slug": "storemate-wc-vendors-2",
+      "category": "marketplace",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/storemate-wc-vendors-2/",
+      "admin_url": "https://installer.wbcomdesigns.com/storemate-wc-vendors-2/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/storemate-wc-vendors-2.jpg",
+      "description": "Alternative StoreMate marketplace with WC Vendors",
+      "features": ["WC Vendors", "Multi-vendor", "Advanced Features", "Vendor Tools"],
+      "manifest_url": "https://installer.wbcomdesigns.com/storemate-wc-vendors-2/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/storemate-wc-vendors-2/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/storemate-wc-vendors-2/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/storemate-wc-vendors-2/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["marketplace", "wc-vendors", "storemate", "advanced"]
+    },
+    {
+      "id": "reign-storemate-wcfm",
+      "name": "StoreMate WCFM",
+      "slug": "storemate-wcfm",
+      "category": "marketplace",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/storemate-wcfm/",
+      "admin_url": "https://installer.wbcomdesigns.com/storemate-wcfm/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/storemate-wcfm.jpg",
+      "description": "StoreMate marketplace with WCFM",
+      "features": ["WCFM", "Multi-vendor", "Frontend Manager", "Analytics"],
+      "manifest_url": "https://installer.wbcomdesigns.com/storemate-wcfm/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/storemate-wcfm/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/storemate-wcfm/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/storemate-wcfm/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["marketplace", "wcfm", "storemate", "frontend-manager"]
+    },
+    {
+      "id": "reign-storemate-woocommerce",
+      "name": "StoreMate WooCommerce",
+      "slug": "storemate-woocommerce",
+      "category": "ecommerce",
+      "version": "1.0.0",
+      "demo_url": "https://installer.wbcomdesigns.com/storemate-woocommerce/",
+      "admin_url": "https://installer.wbcomdesigns.com/storemate-woocommerce/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/storemate-woocommerce.jpg",
+      "description": "StoreMate single vendor WooCommerce store",
+      "features": ["WooCommerce", "Product Catalog", "Shopping Cart", "Payment Integration"],
+      "manifest_url": "https://installer.wbcomdesigns.com/storemate-woocommerce/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/storemate-woocommerce/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/storemate-woocommerce/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/storemate-woocommerce/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["ecommerce", "woocommerce", "storemate", "shop"]
+    }
+  ],
+  "categories": [
+    {
+      "id": "community",
+      "name": "Community",
+      "count": 7
+    },
+    {
+      "id": "education",
+      "name": "Education",
+      "count": 12
+    },
+    {
+      "id": "marketplace",
+      "name": "Marketplace",
+      "count": 8
+    },
+    {
+      "id": "ecommerce",
+      "name": "E-Commerce",
+      "count": 3
+    },
+    {
+      "id": "nonprofit",
+      "name": "Non-Profit",
+      "count": 2
+    },
+    {
+      "id": "job-board",
+      "name": "Job Board",
+      "count": 2
+    },
+    {
+      "id": "directory",
+      "name": "Directory",
+      "count": 1
+    },
+    {
+      "id": "portfolio",
+      "name": "Portfolio",
+      "count": 1
+    },
+    {
+      "id": "dating",
+      "name": "Dating",
+      "count": 1
+    }
+  ],
+  "self_hosted_plugins": {
+    "repository_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/",
+    "plugins": [
+      {
+        "slug": "reign-theme-addon",
+        "name": "Reign Theme Addon",
+        "version": "2.0.0",
+        "description": "Core addon for Reign Theme functionality",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-theme-addon.zip"
+      },
+      {
+        "slug": "wbcom-essential",
+        "name": "Wbcom Essential",
+        "version": "3.0.0",
+        "description": "Essential tools for BuddyPress and BuddyBoss Platform",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/wbcom-essential.zip"
+      },
+      {
+        "slug": "reign-buddypress-addon",
+        "name": "Reign BuddyPress Addon",
+        "version": "1.5.0",
+        "description": "BuddyPress integration for Reign Theme",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-buddypress-addon.zip"
+      },
+      {
+        "slug": "reign-peepso-addon",
+        "name": "Reign PeepSo Addon",
+        "version": "1.2.0",
+        "description": "PeepSo integration for Reign Theme",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-peepso-addon.zip"
+      },
+      {
+        "slug": "reign-learndash-addon",
+        "name": "Reign LearnDash Addon",
+        "version": "1.3.0",
+        "description": "LearnDash integration for Reign Theme",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-learndash-addon.zip"
+      },
+      {
+        "slug": "reign-lifterlms-addon",
+        "name": "Reign LifterLMS Addon",
+        "version": "1.1.0",
+        "description": "LifterLMS integration for Reign Theme",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-lifterlms-addon.zip"
+      },
+      {
+        "slug": "reign-tutorlms-addon",
+        "name": "Reign TutorLMS Addon",
+        "version": "1.0.0",
+        "description": "TutorLMS integration for Reign Theme",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-tutorlms-addon.zip"
+      },
+      {
+        "slug": "reign-sensei-addon",
+        "name": "Reign Sensei Addon",
+        "version": "1.0.0",
+        "description": "Sensei LMS integration for Reign Theme",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-sensei-addon.zip"
+      },
+      {
+        "slug": "reign-dokan-addon",
+        "name": "Reign Dokan Addon",
+        "version": "1.2.0",
+        "description": "Dokan integration for Reign Theme",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-dokan-addon.zip"
+      },
+      {
+        "slug": "reign-wcfm-addon",
+        "name": "Reign WCFM Addon",
+        "version": "1.1.0",
+        "description": "WCFM integration for Reign Theme",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-wcfm-addon.zip"
+      },
+      {
+        "slug": "reign-wc-vendors-addon",
+        "name": "Reign WC Vendors Addon",
+        "version": "1.0.0",
+        "description": "WC Vendors integration for Reign Theme",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-wc-vendors-addon.zip"
+      },
+      {
+        "slug": "reign-geodirectory-addon",
+        "name": "Reign GeoDirectory Addon",
+        "version": "1.0.0",
+        "description": "GeoDirectory integration for Reign Theme",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-geodirectory-addon.zip"
+      },
+      {
+        "slug": "reign-wp-job-manager-addon",
+        "name": "Reign WP Job Manager Addon",
+        "version": "1.1.0",
+        "description": "WP Job Manager integration for Reign Theme",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-wp-job-manager-addon.zip"
+      },
+      {
+        "slug": "reign-edd-addon",
+        "name": "Reign EDD Addon",
+        "version": "1.0.0",
+        "description": "Easy Digital Downloads integration for Reign Theme",
+        "download_url": "https://installer.wbcomdesigns.com/reign-demos/plugins/reign-edd-addon.zip"
+      }
+    ]
+  },
+  "requirements": {
+    "minimum": {
+      "wp_version": "6.0",
+      "php_version": "7.4",
+      "memory_limit": "256M",
+      "max_execution_time": "300",
+      "upload_max_filesize": "64M"
+    },
+    "recommended": {
+      "wp_version": "6.4+",
+      "php_version": "8.0+",
+      "memory_limit": "512M",
+      "max_execution_time": "600",
+      "upload_max_filesize": "128M"
+    }
+  },
+  "support": {
+    "documentation": "https://wbcomdesigns.com/docs/reign-theme/",
+    "support_forum": "https://wbcomdesigns.com/support/",
+    "video_tutorials": "https://www.youtube.com/@wbcomdesigns",
+    "email": "support@wbcomdesigns.com"
+  }
+}
