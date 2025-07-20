@@ -1,0 +1,65 @@
+{
+  "plugin_name": "Reign Demo",
+  "version": "1.0.0",
+  "theme": "Reign Theme",
+  "last_updated": "2025-01-20T00:00:00Z",
+  "demos_count": 1,
+  "base_url": "https://installer.wbcomdesigns.com/master",
+  "demos": [
+    {
+      "id": "demo1",
+      "name": "BuddyX Community Demo",
+      "slug": "buddyx-community",
+      "category": "community",
+      "version": "1.0.0",
+      "demo_url": "https://buddyx.local/",
+      "admin_url": "https://buddyx.local/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/master/demo1/preview.jpg",
+      "description": "Community demo with BuddyBoss Platform, WooCommerce, and Elementor",
+      "features": ["BuddyBoss Platform", "WooCommerce", "Elementor", "Shopping Cart", "Product Catalog"],
+      "manifest_url": "https://installer.wbcomdesigns.com/master/demo1/manifest.json",
+      "files_manifest_url": "https://installer.wbcomdesigns.com/master/demo1/files-manifest.json",
+      "plugins_manifest_url": "https://installer.wbcomdesigns.com/master/demo1/plugins-manifest.json",
+      "package_url": "https://installer.wbcomdesigns.com/master/demo1/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["community", "buddypress", "social", "networking", "woocommerce"]
+    }
+  ],
+  "categories": [
+    {
+      "id": "community",
+      "name": "Community",
+      "count": 1
+    }
+  ],
+  "self_hosted_plugins": {
+    "repository_url": "https://installer.wbcomdesigns.com/master/plugins/",
+    "plugins": []
+  },
+  "requirements": {
+    "minimum": {
+      "wp_version": "6.0",
+      "php_version": "7.4",
+      "memory_limit": "256M",
+      "max_execution_time": "300",
+      "upload_max_filesize": "64M"
+    },
+    "recommended": {
+      "wp_version": "6.4+",
+      "php_version": "8.0+",
+      "memory_limit": "512M",
+      "max_execution_time": "600",
+      "upload_max_filesize": "128M"
+    }
+  },
+  "support": {
+    "documentation": "https://wbcomdesigns.com/docs/reign-theme/",
+    "support_forum": "https://wbcomdesigns.com/support/",
+    "video_tutorials": "https://www.youtube.com/@wbcomdesigns",
+    "email": "support@wbcomdesigns.com"
+  }
+}

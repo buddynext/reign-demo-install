@@ -58,21 +58,18 @@ class Reign_Demo_Install_Admin {
      * Render notices
      */
     private function render_notices() {
-        // Check if import is in progress
-        if (get_transient('reign_demo_import_active_' . get_current_user_id())) {
-            ?>
-            <div class="notice notice-warning">
-                <p>
-                    <strong><?php _e('Import in Progress', 'reign-demo-install'); ?></strong>
-                    <?php _e('A demo import is currently in progress. Please do not close your browser or logout.', 'reign-demo-install'); ?>
-                </p>
-            </div>
-            <?php
-        }
+        // Don't use transients - they cause issues
+        // Following Wbcom's simpler approach
         
         // Check theme
         $theme = wp_get_theme();
-        if ($theme->get('Name') !== 'Reign' && $theme->get('Template') !== 'reign') {
+        $theme_name = strtolower($theme->get('Name'));
+        $theme_template = strtolower($theme->get('Template'));
+        $theme_stylesheet = strtolower($theme->get_stylesheet());
+        
+        // Check if it's Reign theme (case-insensitive)
+        if (!in_array('reign', array($theme_name, $theme_template, $theme_stylesheet)) && 
+            !in_array('reign-theme', array($theme_name, $theme_template, $theme_stylesheet))) {
             ?>
             <div class="notice notice-error">
                 <p>
@@ -148,7 +145,17 @@ class Reign_Demo_Install_Admin {
                     </div>
                     
                     <div class="reign-modal-body">
-                        <div class="reign-import-options">
+                        <div class="reign-plugin-requirements" style="display: none;">
+                            <h4><?php _e('Required Plugins', 'reign-demo-install'); ?></h4>
+                            <p><?php _e('The following plugins are required for this demo:', 'reign-demo-install'); ?></p>
+                            <div class="reign-plugin-list"></div>
+                            <div class="reign-plugin-actions">
+                                <button class="button reign-install-plugins" style="display: none;"><?php _e('Install Missing Plugins', 'reign-demo-install'); ?></button>
+                                <button class="button button-primary reign-continue-import" style="display: none;"><?php _e('Continue to Import', 'reign-demo-install'); ?></button>
+                            </div>
+                        </div>
+                        
+                        <div class="reign-import-options" style="display: none;">
                             <h4><?php _e('Import Options', 'reign-demo-install'); ?></h4>
                             
                             <label class="reign-checkbox">
@@ -179,7 +186,14 @@ class Reign_Demo_Install_Admin {
                             
                             <label class="reign-checkbox">
                                 <input type="checkbox" id="backup-before-import" checked />
-                                <span><?php _e('Create Backup Before Import', 'reign-demo-install'); ?></span>
+                                <span><?php _e('Create Database Backup Before Import', 'reign-demo-install'); ?></span>
+                                <small><?php _e('Creates a backup of your database. Uncheck for very large sites to avoid timeout errors.', 'reign-demo-install'); ?></small>
+                            </label>
+                            
+                            <label class="reign-checkbox" id="backup-essential-only-wrapper" style="margin-left: 20px;">
+                                <input type="checkbox" id="backup-essential-only" />
+                                <span><?php _e('Backup Essential Tables Only', 'reign-demo-install'); ?></span>
+                                <small><?php _e('Only backup critical tables (users, options, usermeta) for faster backup on large sites.', 'reign-demo-install'); ?></small>
                             </label>
                         </div>
                         

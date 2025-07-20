@@ -33,17 +33,26 @@ class Reign_Demo_Plugin_Installer {
         );
         
         foreach ($plugins_manifest as $plugin_data) {
+            // Skip if not array or missing required data
+            if (!is_array($plugin_data)) {
+                $results['failed'][] = 'Invalid plugin data';
+                continue;
+            }
+            
             $result = $this->process_plugin($plugin_data);
             
+            // Use slug if available, otherwise use a placeholder
+            $plugin_identifier = isset($plugin_data['slug']) ? $plugin_data['slug'] : 'unknown-plugin';
+            
             if ($result['status'] === 'installed') {
-                $results['installed'][] = $plugin_data['slug'];
+                $results['installed'][] = $plugin_identifier;
             } elseif ($result['status'] === 'activated') {
-                $results['activated'][] = $plugin_data['slug'];
+                $results['activated'][] = $plugin_identifier;
             } elseif ($result['status'] === 'failed') {
-                $results['failed'][] = $plugin_data['slug'];
+                $results['failed'][] = $plugin_identifier;
                 $this->errors[] = $result['error'];
             } elseif ($result['status'] === 'skipped') {
-                $results['skipped'][] = $plugin_data['slug'];
+                $results['skipped'][] = $plugin_identifier;
             }
         }
         
@@ -56,11 +65,11 @@ class Reign_Demo_Plugin_Installer {
     private function process_plugin($plugin_data) {
         // Validate plugin data
         if (!isset($plugin_data['slug']) || !isset($plugin_data['name'])) {
-            return array('status' => 'failed', 'error' => 'Invalid plugin data');
+            return array('status' => 'failed', 'error' => 'Invalid plugin data - missing slug or name');
         }
         
-        $slug = $plugin_data['slug'];
-        $name = $plugin_data['name'];
+        $slug = sanitize_text_field($plugin_data['slug']);
+        $name = sanitize_text_field($plugin_data['name']);
         $required = isset($plugin_data['required']) ? $plugin_data['required'] : false;
         $version = isset($plugin_data['version']) ? $plugin_data['version'] : '';
         
@@ -79,8 +88,14 @@ class Reign_Demo_Plugin_Installer {
         }
         
         // Handle premium plugins
-        if (isset($plugin_data['source']) && $plugin_data['source'] === 'premium') {
-            return $this->handle_premium_plugin($plugin_data);
+        if (isset($plugin_data['source']) && ($plugin_data['source'] === 'premium' || $plugin_data['source'] === 'purchase')) {
+            // Skip if already installed
+            if ($this->is_plugin_installed($slug)) {
+                return array('status' => 'skipped', 'reason' => 'premium_already_installed');
+            }
+            
+            // For now, skip premium plugins that need purchase
+            return array('status' => 'skipped', 'reason' => 'premium_plugin_requires_purchase');
         }
         
         // Install the plugin
@@ -156,6 +171,11 @@ class Reign_Demo_Plugin_Installer {
         // Check if it's bundled with the demo
         if (isset($plugin_data['source']) && $plugin_data['source'] === 'bundled') {
             return REIGN_DEMO_HUB_URL . 'plugins/' . $slug . '.zip';
+        }
+        
+        // Check for self-hosted plugins
+        if (isset($plugin_data['source']) && $plugin_data['source'] === 'self-hosted') {
+            return isset($plugin_data['download_url']) ? $plugin_data['download_url'] : false;
         }
         
         return false;

@@ -77,8 +77,8 @@ class Reign_Demo_User_Preserver {
         update_user_meta($current_user->ID, '_reign_demo_protected_admin', true);
         update_user_meta($current_user->ID, '_reign_demo_import_time', time());
         
-        // Set import active flag
-        set_transient('reign_demo_import_active_' . $current_user->ID, true, 2 * HOUR_IN_SECONDS);
+        // Don't set transients - they can cause session issues
+        // Following Wbcom's simpler approach
         
         return true;
     }
@@ -135,7 +135,10 @@ class Reign_Demo_User_Preserver {
      * Remove bulk actions during import
      */
     public function remove_bulk_actions($actions) {
-        if (get_transient('reign_demo_import_active_' . get_current_user_id())) {
+        // Don't need to check transients
+        // Just check if user is protected
+        $protected = get_user_meta(get_current_user_id(), '_reign_demo_protected_admin', true);
+        if ($protected) {
             unset($actions['delete']);
             unset($actions['remove']);
         }
@@ -164,8 +167,11 @@ class Reign_Demo_User_Preserver {
      * Prevent user update
      */
     public function prevent_user_update($user_id) {
-        if ($user_id === $this->preserved_user_id && get_transient('reign_demo_import_active_' . $user_id)) {
-            wp_die(__('Cannot modify protected admin user during import.', 'reign-demo-install'));
+        if ($user_id === $this->preserved_user_id) {
+            $protected = get_user_meta($user_id, '_reign_demo_protected_admin', true);
+            if ($protected) {
+                wp_die(__('Cannot modify protected admin user during import.', 'reign-demo-install'));
+            }
         }
     }
     
@@ -200,8 +206,7 @@ class Reign_Demo_User_Preserver {
             return false;
         }
         
-        // Re-authenticate user
-        wp_set_auth_cookie($preserved['ID'], true, is_ssl());
+        // Set current user without manipulating cookies
         wp_set_current_user($preserved['ID']);
         
         // Restore capabilities if needed
@@ -259,6 +264,10 @@ class Reign_Demo_User_Preserver {
         // Restore user meta
         if (isset($preserved['meta'])) {
             foreach ($preserved['meta'] as $meta_key => $meta_value) {
+                // Skip BuddyPress deprecated meta keys that might cause notices
+                if (in_array($meta_key, array('last_activity'))) {
+                    continue;
+                }
                 update_user_meta($user->ID, $meta_key, maybe_unserialize($meta_value[0]));
             }
         }
@@ -272,13 +281,11 @@ class Reign_Demo_User_Preserver {
         delete_option('reign_demo_preserved_session');
         delete_option('reign_demo_import_lock');
         
-        // Clear transients
-        delete_transient('reign_demo_import_active_' . $user->ID);
+        // Remove protection meta
+        delete_user_meta($user->ID, '_reign_demo_protected_admin');
+        delete_user_meta($user->ID, '_reign_demo_import_time');
         
-        // Re-authenticate
-        wp_clear_auth_cookie();
-        wp_set_auth_cookie($user->ID, true, is_ssl());
-        wp_set_current_user($user->ID);
+        // Don't manipulate cookies - causes logout issues
         
         return true;
     }

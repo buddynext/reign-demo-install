@@ -26,6 +26,9 @@ define('REIGN_DEMO_INSTALL_FILE', __FILE__);
 // Demo hub URL
 define('REIGN_DEMO_HUB_URL', 'https://installer.wbcomdesigns.com/reign-demos/');
 
+// Master index URL for demo registry
+define('REIGN_DEMO_MASTER_INDEX_URL', 'https://installer.wbcomdesigns.com/master/remote-index.json');
+
 // Main plugin class
 class Reign_Demo_Install {
     
@@ -60,13 +63,15 @@ class Reign_Demo_Install {
         add_action('wp_ajax_reign_demo_restore_session', array($this, 'ajax_restore_session'));
         add_action('wp_ajax_reign_demo_get_demo_list', array($this, 'ajax_get_demo_list'));
         add_action('wp_ajax_reign_demo_download_demo', array($this, 'ajax_download_demo'));
+        add_action('wp_ajax_reign_demo_check_plugins', array($this, 'ajax_check_plugins'));
+        add_action('wp_ajax_reign_demo_install_plugins', array($this, 'ajax_install_plugins'));
         
         // Activation/Deactivation hooks
         register_activation_hook(__FILE__, array($this, 'activate'));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
         
-        // Add session monitoring
-        add_action('admin_init', array($this, 'monitor_import_session'));
+        // Session monitoring disabled - causes issues and not needed
+        // Following Wbcom's approach
     }
     
     private function load_dependencies() {
@@ -80,6 +85,7 @@ class Reign_Demo_Install {
         require_once REIGN_DEMO_INSTALL_PATH . 'includes/class-settings-importer.php';
         require_once REIGN_DEMO_INSTALL_PATH . 'includes/class-rollback-manager.php';
         require_once REIGN_DEMO_INSTALL_PATH . 'includes/class-ajax-handler.php';
+        require_once REIGN_DEMO_INSTALL_PATH . 'includes/class-session-keeper.php';
         require_once REIGN_DEMO_INSTALL_PATH . 'includes/class-session-manager.php';
         
         // Admin interface
@@ -193,59 +199,59 @@ class Reign_Demo_Install {
             <?php
         }
         
-        // Check if import is in progress
-        if (get_transient('reign_demo_import_active_' . get_current_user_id())) {
-            ?>
-            <div class="notice notice-info">
-                <p><?php _e('Demo import is in progress. Please do not close your browser or logout.', 'reign-demo-install'); ?></p>
-            </div>
-            <?php
-        }
+        // Don't check transients - causes issues
+        // Following simpler approach
     }
     
     public function monitor_import_session() {
-        // Check if import is active
-        if (get_transient('reign_demo_import_active_' . get_current_user_id())) {
-            // Refresh auth cookie to maintain session
-            $session_manager = new Reign_Demo_Session_Manager();
-            $session_manager->refresh_user_session();
-        }
+        // Disabled - not needed and causes issues
+        return;
     }
     
     // AJAX Handlers
     public function ajax_check_requirements() {
-        $ajax_handler = new Reign_Demo_Ajax_Handler();
+        $ajax_handler = new Reign_Demo_Install_Ajax_Handler();
         $ajax_handler->check_requirements();
     }
     
     public function ajax_preserve_user() {
-        $ajax_handler = new Reign_Demo_Ajax_Handler();
+        $ajax_handler = new Reign_Demo_Install_Ajax_Handler();
         $ajax_handler->preserve_user();
     }
     
     public function ajax_import_step() {
-        $ajax_handler = new Reign_Demo_Ajax_Handler();
+        $ajax_handler = new Reign_Demo_Install_Ajax_Handler();
         $ajax_handler->process_import_step();
     }
     
     public function ajax_check_session() {
-        $ajax_handler = new Reign_Demo_Ajax_Handler();
+        $ajax_handler = new Reign_Demo_Install_Ajax_Handler();
         $ajax_handler->check_session();
     }
     
     public function ajax_restore_session() {
-        $ajax_handler = new Reign_Demo_Ajax_Handler();
+        $ajax_handler = new Reign_Demo_Install_Ajax_Handler();
         $ajax_handler->restore_session();
     }
     
     public function ajax_get_demo_list() {
-        $ajax_handler = new Reign_Demo_Ajax_Handler();
+        $ajax_handler = new Reign_Demo_Install_Ajax_Handler();
         $ajax_handler->get_demo_list();
     }
     
     public function ajax_download_demo() {
-        $ajax_handler = new Reign_Demo_Ajax_Handler();
+        $ajax_handler = new Reign_Demo_Install_Ajax_Handler();
         $ajax_handler->download_demo();
+    }
+    
+    public function ajax_check_plugins() {
+        $ajax_handler = new Reign_Demo_Install_Ajax_Handler();
+        $ajax_handler->check_plugins();
+    }
+    
+    public function ajax_install_plugins() {
+        $ajax_handler = new Reign_Demo_Install_Ajax_Handler();
+        $ajax_handler->install_plugins();
     }
     
     // Activation
@@ -277,8 +283,7 @@ class Reign_Demo_Install {
             $this->cleanup_directory($temp_dir);
         }
         
-        // Clear transients
-        delete_transient('reign_demo_import_active_' . get_current_user_id());
+        // No transients to clear
     }
     
     private function cleanup_directory($dir) {

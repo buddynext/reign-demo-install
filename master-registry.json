@@ -3,9 +3,31 @@
   "version": "1.0.0",
   "theme": "Reign Theme",
   "last_updated": "2025-01-03T00:00:00Z",
-  "demos_count": 39,
+  "demos_count": 40,
   "base_url": "https://installer.wbcomdesigns.com",
   "demos": [
+    {
+      "id": "reign-buddyx-local",
+      "name": "BuddyX Local Test",
+      "slug": "buddyx-local",
+      "category": "community",
+      "version": "1.0.0",
+      "demo_url": "https://buddyx.local/",
+      "admin_url": "https://buddyx.local/wp-admin/",
+      "preview_image": "https://installer.wbcomdesigns.com/reign-demos/demo-assets/previews/buddypress-community.jpg",
+      "description": "Local test demo with BuddyBoss Platform and WooCommerce",
+      "features": ["BuddyBoss Platform", "WooCommerce", "Elementor", "Shopping Cart", "Product Catalog"],
+      "manifest_url": "https://buddyx.local/wp-content/reign-demo-export/manifest.json",
+      "files_manifest_url": "https://buddyx.local/wp-content/reign-demo-export/files-manifest.json",
+      "plugins_manifest_url": "https://buddyx.local/wp-content/reign-demo-export/plugins-manifest.json",
+      "package_url": "https://buddyx.local/wp-content/reign-demo-export/content-package.zip",
+      "requirements": {
+        "wp_version": "6.0+",
+        "php_version": "7.4+",
+        "memory_limit": "256M"
+      },
+      "tags": ["community", "buddypress", "social", "networking", "local-test"]
+    },
     {
       "id": "reign-beginners-school",
       "name": "Beginners School",

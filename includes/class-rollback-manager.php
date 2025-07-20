@@ -34,12 +34,12 @@ class Reign_Demo_Rollback_Manager {
             return new WP_Error('backup_failed', __('Failed to create backup directory', 'reign-demo-install'));
         }
         
-        // Set default options
+        // Set default options - only database backup needed
         $defaults = array(
             'backup_database' => true,
-            'backup_files' => true,
-            'backup_settings' => true,
-            'backup_users' => true,
+            'backup_files' => false,  // Files don't change, no need to backup
+            'backup_settings' => false, // Settings are part of database
+            'backup_users' => false,    // Users are part of database
             'compression' => true
         );
         
@@ -56,24 +56,9 @@ class Reign_Demo_Rollback_Manager {
         
         $results = array();
         
-        // Backup database
+        // Only backup database - files don't change on same site
         if ($options['backup_database']) {
             $results['database'] = $this->backup_database($backup_path);
-        }
-        
-        // Backup files
-        if ($options['backup_files']) {
-            $results['files'] = $this->backup_files($backup_path);
-        }
-        
-        // Backup settings
-        if ($options['backup_settings']) {
-            $results['settings'] = $this->backup_settings($backup_path);
-        }
-        
-        // Backup users
-        if ($options['backup_users']) {
-            $results['users'] = $this->backup_users($backup_path);
         }
         
         // Save backup manifest
@@ -100,11 +85,29 @@ class Reign_Demo_Rollback_Manager {
     private function backup_database($backup_path) {
         global $wpdb;
         
-        $tables_backed_up = 0;
-        $db_backup_file = $backup_path . 'database.sql';
-        
-        // Get all tables
-        $tables = $wpdb->get_results('SHOW TABLES', ARRAY_N);
+        try {
+            $tables_backed_up = 0;
+            $db_backup_file = $backup_path . 'database.sql';
+            
+            // For large databases, only backup essential tables
+            $essential_tables = array(
+                $wpdb->prefix . 'options',
+                $wpdb->prefix . 'users',
+                $wpdb->prefix . 'usermeta'
+            );
+            
+            // Get all tables or just essential ones
+            $backup_all = get_option('reign_demo_backup_all_tables', false);
+            if ($backup_all) {
+                $tables = $wpdb->get_results('SHOW TABLES', ARRAY_N);
+            } else {
+                $tables = array();
+                foreach ($essential_tables as $table) {
+                    if ($wpdb->get_var("SHOW TABLES LIKE '$table'")) {
+                        $tables[] = array($table);
+                    }
+                }
+            }
         
         $backup_content = "-- WordPress Database Backup\n";
         $backup_content .= "-- Generated: " . date('Y-m-d H:i:s') . "\n";
@@ -156,10 +159,14 @@ class Reign_Demo_Rollback_Manager {
             $this->compress_file($db_backup_file);
         }
         
-        return array(
-            'tables_backed_up' => $tables_backed_up,
-            'backup_file' => basename($db_backup_file)
-        );
+            return array(
+                'tables_backed_up' => $tables_backed_up,
+                'backup_file' => basename($db_backup_file)
+            );
+        } catch (Exception $e) {
+            error_log('Reign Demo Install - Database backup error: ' . $e->getMessage());
+            throw new Exception('Database backup failed: ' . $e->getMessage());
+        }
     }
     
     /**
@@ -290,7 +297,7 @@ class Reign_Demo_Rollback_Manager {
             
             // Add BuddyPress data if available
             if (function_exists('bp_get_user_meta')) {
-                $user_data['bp_meta'] = bp_get_user_meta($user->ID);
+                $user_data['bp_meta'] = bp_get_user_meta($user->ID, '', true);
             }
             
             $users_data[] = $user_data;
@@ -324,24 +331,11 @@ class Reign_Demo_Rollback_Manager {
         
         $results = array();
         
-        // Restore database
+        // Only restore database - we only backup database
         if (file_exists($backup_path . 'database.sql') || file_exists($backup_path . 'database.sql.gz')) {
             $results['database'] = $this->restore_database($backup_path);
-        }
-        
-        // Restore files
-        if (is_dir($backup_path . 'uploads/')) {
-            $results['files'] = $this->restore_files($backup_path);
-        }
-        
-        // Restore settings
-        if (file_exists($backup_path . 'settings.json')) {
-            $results['settings'] = $this->restore_settings($backup_path);
-        }
-        
-        // Restore users
-        if (file_exists($backup_path . 'users.json')) {
-            $results['users'] = $this->restore_users($backup_path);
+        } else {
+            return new WP_Error('no_backup_found', __('No database backup found', 'reign-demo-install'));
         }
         
         // Clear caches

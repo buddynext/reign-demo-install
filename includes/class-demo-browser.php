@@ -41,7 +41,10 @@ class Reign_Demo_Browser {
      * Fetch demos from master registry
      */
     private function fetch_demos_from_registry() {
-        $registry_url = REIGN_DEMO_HUB_URL . 'master-registry.json';
+        // Use the master index URL if defined, otherwise fallback to old location
+        $registry_url = defined('REIGN_DEMO_MASTER_INDEX_URL') 
+            ? REIGN_DEMO_MASTER_INDEX_URL 
+            : REIGN_DEMO_HUB_URL . 'master-registry.json';
         
         $response = wp_remote_get($registry_url, array(
             'timeout' => 30,
@@ -114,6 +117,36 @@ class Reign_Demo_Browser {
      * Get fallback demos if registry is unavailable
      */
     private function get_fallback_demos() {
+        // Try to load from local registry file
+        $local_registry_file = REIGN_DEMO_INSTALL_PATH . 'master-registry.json';
+        if (file_exists($local_registry_file)) {
+            $local_data = json_decode(file_get_contents($local_registry_file), true);
+            if ($local_data && isset($local_data['demos'])) {
+                return $this->process_demo_data($local_data['demos']);
+            }
+        }
+        
+        // For local testing - check if demo1 folder exists
+        $local_demo1 = REIGN_DEMO_INSTALL_PATH . 'demo1/';
+        if (file_exists($local_demo1 . 'manifest.json')) {
+            return array(
+                array(
+                    'id' => 'demo1',
+                    'name' => 'BuddyX Community Demo',
+                    'slug' => 'buddyx-community',
+                    'description' => 'Community demo with BuddyBoss Platform, WooCommerce, and Elementor',
+                    'category' => 'community',
+                    'preview_url' => 'https://buddyx.local/',
+                    'thumbnail' => REIGN_DEMO_INSTALL_URL . 'demo1/preview.jpg',
+                    'manifest_url' => REIGN_DEMO_INSTALL_URL . 'demo1/manifest.json',
+                    'package_url' => REIGN_DEMO_INSTALL_URL . 'demo1/content-package.zip',
+                    'plugins_manifest_url' => REIGN_DEMO_INSTALL_URL . 'demo1/plugins-manifest.json',
+                    'files_manifest_url' => REIGN_DEMO_INSTALL_URL . 'demo1/files-manifest.json',
+                    'tags' => array('community', 'buddypress', 'social', 'networking', 'woocommerce')
+                )
+            );
+        }
+        
         // Hardcoded fallback demos
         return array(
             array(

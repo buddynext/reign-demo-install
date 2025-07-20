@@ -23,10 +23,45 @@ class Reign_Demo_File_Importer {
     /**
      * Import files from package
      */
-    public function import_files($source_package, $files_manifest = null) {
+    public function import_files($source_package, $files_manifest = null, $demo_id = null) {
         // Set up directories
-        $this->source_dir = WP_CONTENT_DIR . '/reign-demo-temp/current-import/files/';
+        // Check multiple possible source locations
+        if ($demo_id) {
+            $possible_sources = array(
+                WP_CONTENT_DIR . '/reign-demo-temp/' . $demo_id . '/extracted/uploads/',
+                WP_CONTENT_DIR . '/reign-demo-temp/' . $demo_id . '/extracted/files/',
+                WP_CONTENT_DIR . '/reign-demo-temp/' . $demo_id . '/uploads/',
+                WP_CONTENT_DIR . '/reign-demo-temp/' . $demo_id . '/extracted/',
+                WP_CONTENT_DIR . '/reign-demo-temp/extracted/uploads/',
+                WP_CONTENT_DIR . '/reign-demo-temp/extracted/files/'
+            );
+            
+            foreach ($possible_sources as $source) {
+                if (is_dir($source)) {
+                    $this->source_dir = $source;
+                    break;
+                }
+            }
+            
+            // If no source directory found, set to null to handle gracefully
+            if (!isset($this->source_dir)) {
+                $this->source_dir = null;
+            }
+        } else {
+            $this->source_dir = WP_CONTENT_DIR . '/reign-demo-temp/extracted/files/';
+        }
+        
         $this->target_dir = wp_upload_dir()['basedir'];
+        
+        // Check if we have any source to import from
+        if (!$this->source_dir || !is_dir($this->source_dir)) {
+            // No source directory found - this is OK, just means no files to import
+            return array(
+                'imported' => 0,
+                'failed' => 0,
+                'message' => __('No files to import', 'reign-demo-install')
+            );
+        }
         
         // Extract files if package is provided
         if ($source_package && file_exists($source_package)) {
@@ -43,11 +78,9 @@ class Reign_Demo_File_Importer {
         }
         
         // Import files
-        if ($manifest && isset($manifest['files'])) {
-            $result = $this->import_from_manifest($manifest['files']);
-        } else {
-            $result = $this->import_all_files();
-        }
+        // For now, always use import_all_files as the manifest structure is complex
+        // and may contain nested directories rather than a simple file list
+        $result = $this->import_all_files();
         
         // Clean up temp files
         $this->cleanup_temp_files();
@@ -86,8 +119,15 @@ class Reign_Demo_File_Importer {
         );
         
         foreach ($files as $file_info) {
-            $source = $this->source_dir . $file_info['path'];
-            $target = $this->target_dir . '/' . $file_info['path'];
+            // Validate and sanitize the path to prevent directory traversal
+            $path = $this->sanitize_file_path($file_info['path']);
+            if (!$path) {
+                $results['failed']++;
+                continue;
+            }
+            
+            $source = $this->source_dir . $path;
+            $target = $this->target_dir . '/' . $path;
             
             // Skip if file doesn't exist in source
             if (!file_exists($source)) {
@@ -128,30 +168,54 @@ class Reign_Demo_File_Importer {
             'skipped' => 0
         );
         
-        if (!is_dir($this->source_dir)) {
-            return new WP_Error('source_not_found', __('Source directory not found', 'reign-demo-install'));
+        if (empty($this->source_dir) || !is_dir($this->source_dir)) {
+            // This is not an error - just means no files to import
+            return $results;
         }
         
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($this->source_dir, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::SELF_FIRST
-        );
-        
-        foreach ($iterator as $file) {
-            if ($file->isDir()) {
-                continue;
-            }
+        try {
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($this->source_dir, RecursiveDirectoryIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::SELF_FIRST
+            );
             
-            $source = $file->getPathname();
-            $relative_path = str_replace($this->source_dir, '', $source);
-            $target = $this->target_dir . '/' . $relative_path;
-            
-            // Import the file
-            if ($this->import_file($source, $target)) {
-                $results['imported']++;
-            } else {
-                $results['failed']++;
+            foreach ($iterator as $file) {
+                if ($file->isDir()) {
+                    continue;
+                }
+                
+                $source = $file->getPathname();
+                
+                // Handle different source directory structures
+                if (strpos($this->source_dir, '/uploads/') !== false) {
+                    // If source is already in uploads format, preserve the path
+                    $relative_path = str_replace($this->source_dir, '', $source);
+                } elseif (strpos($this->source_dir, '/extracted/') !== false && !strpos($this->source_dir, '/extracted/uploads/')) {
+                    // If source is extracted root, check for uploads subdirectory
+                    $uploads_pos = strpos($source, '/uploads/');
+                    if ($uploads_pos !== false) {
+                        $relative_path = substr($source, $uploads_pos + strlen('/uploads/'));
+                    } else {
+                        $relative_path = str_replace($this->source_dir, '', $source);
+                    }
+                } else {
+                    $relative_path = str_replace($this->source_dir, '', $source);
+                }
+                
+                // Clean up the relative path
+                $relative_path = ltrim($relative_path, '/');
+                $target = $this->target_dir . '/' . $relative_path;
+                
+                // Import the file
+                if ($this->import_file($source, $target)) {
+                    $results['imported']++;
+                } else {
+                    $results['failed']++;
+                }
             }
+        } catch (Exception $e) {
+            // Handle any errors gracefully
+            error_log('File import error: ' . $e->getMessage());
         }
         
         return $results;
@@ -350,7 +414,7 @@ class Reign_Demo_File_Importer {
      * Clean up temporary files
      */
     private function cleanup_temp_files() {
-        if (is_dir($this->source_dir)) {
+        if (!empty($this->source_dir) && is_dir($this->source_dir)) {
             $this->delete_directory($this->source_dir);
         }
     }
@@ -439,5 +503,51 @@ class Reign_Demo_File_Importer {
                 @chmod($item->getPathname(), $file_perms);
             }
         }
+    }
+    
+    /**
+     * Sanitize file path to prevent directory traversal attacks
+     * 
+     * @param string $path The file path to sanitize
+     * @return string|false Sanitized path or false if invalid
+     */
+    private function sanitize_file_path($path) {
+        // Check if path is valid
+        if (empty($path) || !is_string($path)) {
+            return false;
+        }
+        
+        // Remove any directory traversal attempts
+        $path = str_replace('..', '', $path);
+        $path = str_replace('//', '/', $path);
+        $path = str_replace('\\', '/', $path);
+        
+        // Remove any absolute paths
+        $path = ltrim($path, '/');
+        
+        // Validate path doesn't go outside allowed directories
+        $normalized = wp_normalize_path($path);
+        
+        // Check for suspicious patterns
+        if (preg_match('/\.\.\/|\.\.\\\\|^\/|^\\\\|^[a-zA-Z]:/', $normalized)) {
+            return false;
+        }
+        
+        // Only allow specific file extensions for media files
+        $allowed_extensions = array(
+            'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'ico',
+            'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+            'odt', 'ods', 'odp', 'txt', 'csv', 'rtf',
+            'mp3', 'mp4', 'wav', 'avi', 'mov', 'wmv', 'flv',
+            'ogg', 'webm', 'm4a', 'zip', 'rar', '7z',
+            'json', 'xml', 'css', 'js'
+        );
+        
+        $extension = strtolower(pathinfo($normalized, PATHINFO_EXTENSION));
+        if (!empty($extension) && !in_array($extension, $allowed_extensions)) {
+            return false;
+        }
+        
+        return $normalized;
     }
 }

@@ -21,9 +21,24 @@ class Reign_Demo_Session_Manager {
      */
     public function init_session_protection() {
         // Create session lock
+        $user_id = get_current_user_id();
+        if ($user_id <= 0) {
+            return false;
+        }
+        
+        // Get session token safely
+        $session_token = '';
+        if (function_exists('wp_get_session_token')) {
+            try {
+                $session_token = wp_get_session_token();
+            } catch (Exception $e) {
+                // Continue without token
+            }
+        }
+        
         $session_data = array(
-            'user_id' => get_current_user_id(),
-            'session_token' => wp_get_session_token(),
+            'user_id' => $user_id,
+            'session_token' => $session_token,
             'start_time' => time(),
             'last_heartbeat' => time(),
             'import_active' => true
@@ -31,13 +46,8 @@ class Reign_Demo_Session_Manager {
         
         update_option($this->session_key, $session_data, false);
         
-        // Set session cookie with extended expiration
-        $this->extend_session_cookie();
-        
-        // Add hooks to prevent logout
-        add_filter('logout_url', array($this, 'prevent_logout_url'), 999);
-        add_action('wp_logout', array($this, 'prevent_logout_action'), 1);
-        add_filter('login_url', array($this, 'modify_login_url'), 999);
+        // Don't try to extend cookies - this can cause issues
+        // Just rely on the session keeper filters
         
         return true;
     }
@@ -46,23 +56,9 @@ class Reign_Demo_Session_Manager {
      * Extend session cookie expiration
      */
     private function extend_session_cookie() {
-        $user_id = get_current_user_id();
-        
-        // Clear existing auth cookies
-        wp_clear_auth_cookie();
-        
-        // Set new auth cookie with extended expiration (2 hours)
-        wp_set_auth_cookie($user_id, true, is_ssl());
-        
-        // Update session expiration in database
-        $sessions = WP_Session_Tokens::get_instance($user_id);
-        $token = wp_get_session_token();
-        
-        if ($token) {
-            $session = $sessions->get($token);
-            $session['expiration'] = time() + (2 * HOUR_IN_SECONDS);
-            $sessions->update($token, $session);
-        }
+        // Don't manipulate cookies - this causes logout issues
+        // Following Wbcom's approach of not touching auth cookies
+        return true;
     }
     
     /**
@@ -112,9 +108,9 @@ class Reign_Demo_Session_Manager {
             return false;
         }
         
-        // Re-authenticate user
+        // Don't manipulate auth cookies - causes logout issues
+        // Just set current user without touching cookies
         wp_set_current_user($session_data['user_id']);
-        wp_set_auth_cookie($session_data['user_id'], true, is_ssl());
         
         // Verify authentication
         if (get_current_user_id() == $session_data['user_id']) {

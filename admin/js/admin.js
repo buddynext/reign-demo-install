@@ -40,6 +40,13 @@ jQuery(document).ready(function($) {
             
             // Clean install checkbox
             $('#clean-install').on('change', this.toggleCleanInstallWarning.bind(this));
+            
+            // Backup checkbox
+            $('#backup-before-import').on('change', this.toggleBackupOptions.bind(this));
+            
+            // Plugin installation
+            $('.reign-install-plugins').on('click', this.installMissingPlugins.bind(this));
+            $('.reign-continue-import').on('click', this.continueToImportOptions.bind(this));
         },
         
         loadDemos: function() {
@@ -175,6 +182,9 @@ jQuery(document).ready(function($) {
             };
             
             $('#reign-demo-import-modal').fadeIn();
+            
+            // Check plugin requirements first
+            this.checkPluginRequirements();
         },
         
         hideImportModal: function(e) {
@@ -233,6 +243,12 @@ jQuery(document).ready(function($) {
                 success: function(response) {
                     if (response.success) {
                         self.addLog('Admin user preserved: ' + response.data.user_data.login, 'success');
+                        
+                        // Check if backup is enabled
+                        if (!$('#backup-before-import').is(':checked')) {
+                            self.addLog('Skipping database backup as per user request', 'warning');
+                        }
+                        
                         self.processImportStep('backup');
                     } else {
                         self.handleImportError(response.data.message);
@@ -257,8 +273,8 @@ jQuery(document).ready(function($) {
             };
             
             var stepMessages = {
-                'backup': 'Creating backup...',
-                'download': 'Downloading demo files...',
+                'backup': 'Creating database backup...',
+                'download': 'Downloading demo files (manifest, plugins, files, content)...',
                 'plugins': 'Installing required plugins...',
                 'content': 'Importing demo content...',
                 'files': 'Importing media files...',
@@ -274,7 +290,8 @@ jQuery(document).ready(function($) {
                 import_users: $('#import-users').is(':checked'),
                 import_settings: $('#import-settings').is(':checked'),
                 clean_existing: $('#clean-install').is(':checked'),
-                backup_database: $('#backup-before-import').is(':checked')
+                backup_database: $('#backup-before-import').is(':checked'),
+                backup_essential_only: $('#backup-essential-only').is(':checked')
             };
             
             $.ajax({
@@ -287,9 +304,10 @@ jQuery(document).ready(function($) {
                     options: options,
                     nonce: reign_demo_install.nonce
                 },
+                timeout: 300000, // 5 minutes timeout
                 success: function(response) {
                     if (response.success) {
-                        self.addLog(response.data.message, 'success');
+                        self.addLog(response.data.message, response.data.warning ? 'warning' : 'success');
                         
                         if (response.data.next_step) {
                             setTimeout(function() {
@@ -302,8 +320,48 @@ jQuery(document).ready(function($) {
                         self.handleImportError(response.data.message);
                     }
                 },
-                error: function() {
-                    self.handleImportError('Network error during ' + step);
+                error: function(xhr, status, error) {
+                    if (status === 'timeout') {
+                        self.handleImportError('Request timed out during ' + step + '. Your site might have large data. Try disabling backup option.');
+                    } else {
+                        var errorMessage = 'Network error during ' + step + ':';
+                        
+                        // Log detailed error info to console
+                        console.error('=== AJAX Error Details ===');
+                        console.error('Step:', step);
+                        console.error('Status:', status);
+                        console.error('Error:', error);
+                        console.error('Response Status:', xhr.status);
+                        console.error('Response Text:', xhr.responseText);
+                        console.error('========================');
+                        
+                        // Try to get more details from response
+                        if (xhr.responseText) {
+                            try {
+                                var response = JSON.parse(xhr.responseText);
+                                if (response.data && response.data.message) {
+                                    errorMessage = response.data.message;
+                                }
+                            } catch (e) {
+                                // Response is not JSON, might be PHP error
+                                if (xhr.responseText.length < 200) {
+                                    errorMessage += ' ' + xhr.responseText;
+                                } else {
+                                    errorMessage += ' (Check browser console for full error details)';
+                                }
+                            }
+                        } else if (xhr.status === 0) {
+                            errorMessage += ' Connection failed or request was cancelled';
+                        } else if (xhr.status === 500) {
+                            errorMessage += ' Server error (500)';
+                        } else if (xhr.status === 404) {
+                            errorMessage += ' Endpoint not found (404)';
+                        } else {
+                            errorMessage += ' ' + error;
+                        }
+                        
+                        self.handleImportError(errorMessage);
+                    }
                 }
             });
         },
@@ -340,13 +398,9 @@ jQuery(document).ready(function($) {
         },
         
         startSessionMonitoring: function() {
-            var self = this;
-            
-            this.sessionCheckInterval = setInterval(function() {
-                if (self.importInProgress) {
-                    self.checkSession();
-                }
-            }, 30000); // Check every 30 seconds
+            // Disabled session monitoring - it causes issues and is not needed
+            // Following Wbcom's approach of not monitoring sessions
+            return;
         },
         
         checkSession: function() {
@@ -405,6 +459,15 @@ jQuery(document).ready(function($) {
             }
         },
         
+        toggleBackupOptions: function() {
+            if ($('#backup-before-import').is(':checked')) {
+                $('#backup-essential-only-wrapper').show();
+            } else {
+                $('#backup-essential-only-wrapper').hide();
+                $('#backup-essential-only').prop('checked', false);
+            }
+        },
+        
         restoreBackup: function(e) {
             e.preventDefault();
             
@@ -448,6 +511,138 @@ jQuery(document).ready(function($) {
                 clearTimeout(timeout);
                 timeout = setTimeout(later, wait);
             };
+        },
+        
+        checkPluginRequirements: function() {
+            var self = this;
+            
+            // Show loading state
+            $('.reign-plugin-requirements').show();
+            $('.reign-import-options').hide();
+            $('.reign-plugin-list').html('<div class="spinner is-active"></div>');
+            
+            $.ajax({
+                url: reign_demo_install.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'reign_demo_check_plugins',
+                    demo_id: this.currentDemo.id,
+                    nonce: reign_demo_install.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        self.displayPluginRequirements(response.data);
+                    } else {
+                        self.showError('Failed to check plugin requirements');
+                        self.continueToImportOptions();
+                    }
+                },
+                error: function() {
+                    self.showError('Network error while checking plugins');
+                    self.continueToImportOptions();
+                }
+            });
+        },
+        
+        displayPluginRequirements: function(data) {
+            var $list = $('.reign-plugin-list');
+            var html = '<table class="wp-list-table widefat">';
+            html += '<thead><tr>';
+            html += '<th>' + 'Plugin' + '</th>';
+            html += '<th>' + 'Status' + '</th>';
+            html += '<th>' + 'Required Version' + '</th>';
+            html += '</tr></thead><tbody>';
+            
+            var hasRequired = false;
+            var hasMissing = false;
+            
+            $.each(data.plugins, function(slug, plugin) {
+                var statusClass = '';
+                var statusText = '';
+                
+                if (plugin.installed && plugin.active) {
+                    statusClass = 'active';
+                    statusText = 'Active';
+                } else if (plugin.installed) {
+                    statusClass = 'inactive';
+                    statusText = 'Inactive';
+                    if (plugin.required) hasMissing = true;
+                } else {
+                    statusClass = 'not-installed';
+                    statusText = 'Not Installed';
+                    if (plugin.required) hasMissing = true;
+                }
+                
+                if (plugin.required) {
+                    hasRequired = true;
+                }
+                
+                html += '<tr class="plugin-' + statusClass + '">';
+                html += '<td>' + plugin.name;
+                if (plugin.required) {
+                    html += ' <span class="required">*</span>';
+                }
+                html += '</td>';
+                html += '<td class="status-' + statusClass + '">' + statusText + '</td>';
+                html += '<td>' + (plugin.version || 'Any') + '</td>';
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            
+            if (hasRequired) {
+                html += '<p class="description">* Required plugin</p>';
+            }
+            
+            $list.html(html);
+            
+            // Show appropriate buttons
+            if (hasMissing) {
+                $('.reign-install-plugins').show();
+                $('.reign-continue-import').text('Skip and Continue').show();
+            } else {
+                $('.reign-install-plugins').hide();
+                $('.reign-continue-import').text('Continue to Import').show();
+            }
+        },
+        
+        installMissingPlugins: function(e) {
+            e.preventDefault();
+            
+            var self = this;
+            var $button = $(e.target);
+            $button.prop('disabled', true).text('Installing...');
+            
+            $.ajax({
+                url: reign_demo_install.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'reign_demo_install_plugins',
+                    demo_id: this.currentDemo.id,
+                    nonce: reign_demo_install.nonce
+                },
+                timeout: 300000, // 5 minutes
+                success: function(response) {
+                    if (response.success) {
+                        // Refresh plugin list
+                        self.checkPluginRequirements();
+                    } else {
+                        alert('Failed to install plugins: ' + response.data.message);
+                    }
+                    $button.prop('disabled', false).text('Install Missing Plugins');
+                },
+                error: function() {
+                    alert('Network error while installing plugins');
+                    $button.prop('disabled', false).text('Install Missing Plugins');
+                }
+            });
+        },
+        
+        continueToImportOptions: function(e) {
+            if (e) e.preventDefault();
+            
+            $('.reign-plugin-requirements').hide();
+            $('.reign-import-options').show();
         }
     };
     

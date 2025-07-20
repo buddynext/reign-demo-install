@@ -405,6 +405,78 @@
     margin-bottom: 8px;
 }
 
+/* Backup options */
+#backup-essential-only-wrapper {
+    display: none;
+}
+
+/* Plugin requirements */
+.reign-plugin-requirements {
+    margin-bottom: 20px;
+}
+
+.reign-plugin-requirements h4 {
+    margin: 0 0 10px;
+    font-size: 16px;
+}
+
+.reign-plugin-requirements p {
+    margin: 0 0 15px;
+    color: #666;
+}
+
+.reign-plugin-list {
+    margin-bottom: 20px;
+}
+
+.reign-plugin-list table {
+    margin: 0;
+}
+
+.reign-plugin-list .required {
+    color: #dc3232;
+    font-weight: bold;
+}
+
+.reign-plugin-list .status-active {
+    color: #46b450;
+    font-weight: 600;
+}
+
+.reign-plugin-list .status-inactive {
+    color: #ffb900;
+    font-weight: 600;
+}
+
+.reign-plugin-list .status-not-installed {
+    color: #dc3232;
+    font-weight: 600;
+}
+
+.reign-plugin-list .plugin-active {
+    background: #f7fcf9;
+}
+
+.reign-plugin-list .plugin-inactive {
+    background: #fffcf5;
+}
+
+.reign-plugin-list .plugin-not-installed {
+    background: #fef7f7;
+}
+
+.reign-plugin-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.reign-plugin-list .spinner {
+    float: none;
+    margin: 20px auto;
+    display: block;
+}
+
 /* Responsive */
 @media screen and (max-width: 782px) {
     .reign-demo-grid {
