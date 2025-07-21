@@ -718,9 +718,25 @@ class Reign_Demo_Install_Ajax_Handler {
                     // Skip truncating, we'll merge the data
                 }
             } else {
-                // For all other tables, truncate before import
-                error_log("SQL Import - Truncating table: $table_name for full import");
-                $wpdb->query("TRUNCATE TABLE `{$table_name}`");
+                // Check if this is a BuddyBoss/BuddyPress table
+                $is_buddyboss_table = (strpos($table_name, $wpdb->prefix . 'bp_') === 0 || 
+                                       strpos($table_name, $wpdb->prefix . 'bb_') === 0);
+                
+                if ($is_buddyboss_table) {
+                    // NEVER truncate BuddyBoss/BuddyPress tables - preserve existing data
+                    error_log("SQL Import - Preserving BuddyBoss/BuddyPress table: $table_name");
+                    // We'll skip importing this table if it already has data
+                    $count = $wpdb->get_var("SELECT COUNT(*) FROM `{$table_name}`");
+                    if ($count > 0) {
+                        error_log("SQL Import - Table $table_name has $count rows, skipping import to preserve data");
+                        $results['skipped']++;
+                        continue;
+                    }
+                } else {
+                    // For all other non-critical tables, truncate before import
+                    error_log("SQL Import - Truncating table: $table_name for full import");
+                    $wpdb->query("TRUNCATE TABLE `{$table_name}`");
+                }
                 
                 // Special debug for posts table
                 if ($table_name === $wpdb->posts) {
@@ -969,7 +985,10 @@ class Reign_Demo_Install_Ajax_Handler {
             
             // CRITICAL: Skip DROP TABLE statements to preserve existing tables
             if (preg_match('/^\s*DROP\s+TABLE\s+/i', $statement)) {
-                error_log("Skipping DROP TABLE statement to preserve existing data");
+                // Extract table name for logging
+                if (preg_match('/DROP\s+TABLE\s+(?:IF\s+EXISTS\s+)?[`\'"]?(\w+)[`\'"]?/i', $statement, $matches)) {
+                    error_log("REIGN-DEMO: Skipping DROP TABLE for " . $matches[1] . " to preserve existing data");
+                }
                 continue;
             }
             
