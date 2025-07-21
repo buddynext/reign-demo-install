@@ -161,6 +161,10 @@ class Reign_Demo_Install_Ajax_Handler {
                 $this->process_plugins_step($demo_id);
                 break;
                 
+            case 'components':
+                $this->process_components_step();
+                break;
+                
             case 'content':
                 $this->process_content_step($demo_id, $options);
                 break;
@@ -339,7 +343,7 @@ class Reign_Demo_Install_Ajax_Handler {
             // No plugins manifest, skip to content
             wp_send_json_success(array(
                 'message' => __('No plugins manifest found, skipping plugin installation', 'reign-demo-install'),
-                'next_step' => 'content'
+                'next_step' => 'components'
             ));
         }
         
@@ -348,7 +352,7 @@ class Reign_Demo_Install_Ajax_Handler {
         if (!$plugins_manifest || !isset($plugins_manifest['plugins'])) {
             wp_send_json_success(array(
                 'message' => __('No plugins to install', 'reign-demo-install'),
-                'next_step' => 'content'
+                'next_step' => 'components'
             ));
         }
         
@@ -369,7 +373,7 @@ class Reign_Demo_Install_Ajax_Handler {
         if (empty($all_plugins)) {
             wp_send_json_success(array(
                 'message' => __('No plugins to install', 'reign-demo-install'),
-                'next_step' => 'content'
+                'next_step' => 'components'
             ));
         }
         
@@ -395,6 +399,43 @@ class Reign_Demo_Install_Ajax_Handler {
         wp_send_json_success(array(
             'message' => implode(', ', $message_parts),
             'results' => $results,
+            'next_step' => 'components'
+        ));
+    }
+    
+    /**
+     * Process components step - Enable BuddyBoss/BuddyPress components
+     */
+    private function process_components_step() {
+        // Enable all components
+        $component_enabler = new Reign_Demo_Component_Enabler();
+        $results = $component_enabler->enable_all_components();
+        
+        // Build response message
+        $message_parts = array();
+        
+        if ($results['platform'] === 'none') {
+            $message_parts[] = __('No BuddyBoss/BuddyPress platform detected', 'reign-demo-install');
+        } else {
+            $message_parts[] = sprintf(__('%s platform detected', 'reign-demo-install'), ucfirst($results['platform']));
+            
+            if (!empty($results['enabled'])) {
+                $message_parts[] = sprintf(__('Enabled %d components', 'reign-demo-install'), count($results['enabled']));
+            } else {
+                $message_parts[] = __('All components already enabled', 'reign-demo-install');
+            }
+        }
+        
+        // Get status report
+        $status = $component_enabler->get_component_status();
+        if (!empty($status['tables'])) {
+            $message_parts[] = sprintf(__('%d database tables ready', 'reign-demo-install'), count($status['tables']));
+        }
+        
+        wp_send_json_success(array(
+            'message' => implode('. ', $message_parts),
+            'results' => $results,
+            'status' => $status,
             'next_step' => 'content'
         ));
     }

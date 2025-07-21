@@ -266,8 +266,9 @@ jQuery(document).ready(function($) {
             var stepProgress = {
                 'backup': 10,
                 'download': 20,
-                'plugins': 40,
-                'content': 60,
+                'plugins': 35,
+                'components': 50,
+                'content': 65,
                 'files': 80,
                 'settings': 90,
                 'cleanup': 100
@@ -277,6 +278,7 @@ jQuery(document).ready(function($) {
                 'backup': 'Creating database backup...',
                 'download': 'Downloading demo files (manifest, plugins, files, content)...',
                 'plugins': 'Installing required plugins...',
+                'components': 'Enabling BuddyBoss/BuddyPress components...',
                 'content': 'Importing demo content...',
                 'files': 'Importing media files...',
                 'settings': 'Importing settings...',

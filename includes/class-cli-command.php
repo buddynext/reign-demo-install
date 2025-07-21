@@ -790,9 +790,34 @@ class Reign_Demo_Install_CLI_Command {
             // Give plugins time to initialize their database tables
             WP_CLI::log("  Waiting for plugins to initialize...");
             sleep(2);
+            
+            // CRITICAL: Enable all BuddyBoss/BuddyPress components
+            WP_CLI::log("\nEnabling BuddyBoss/BuddyPress components...");
+            $component_enabler = new Reign_Demo_Component_Enabler();
+            $component_results = $component_enabler->enable_all_components();
+            
+            if ($component_results['platform'] === 'none') {
+                WP_CLI::warning("Neither BuddyBoss nor BuddyPress is active - component data may be lost!");
+            } else {
+                WP_CLI::success("Platform detected: " . $component_results['platform']);
+                if (!empty($component_results['enabled'])) {
+                    WP_CLI::success("Enabled components: " . implode(', ', $component_results['enabled']));
+                } else {
+                    WP_CLI::log("All components were already enabled");
+                }
+                
+                // Get status report
+                $status = $component_enabler->get_component_status();
+                WP_CLI::log("Active components: " . implode(', ', $status['components']));
+                WP_CLI::log("Database tables: " . count($status['tables']) . " BuddyBoss/BuddyPress tables found");
+            }
+            
+            // Give components time to initialize
+            WP_CLI::log("  Waiting for components to initialize...");
+            sleep(2);
         }
         
-        // Step 4: Import database content (AFTER plugins are active)
+        // Step 4: Import database content (AFTER plugins are active AND components enabled)
         WP_CLI::log("\nImporting database content...");
         
         // Use the AJAX handler's SQL import method

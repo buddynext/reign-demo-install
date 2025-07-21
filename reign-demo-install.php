@@ -92,6 +92,7 @@ class Reign_Demo_Install {
         require_once REIGN_DEMO_INSTALL_PATH . 'includes/class-ajax-handler.php';
         require_once REIGN_DEMO_INSTALL_PATH . 'includes/class-session-keeper.php';
         require_once REIGN_DEMO_INSTALL_PATH . 'includes/class-session-manager.php';
+        require_once REIGN_DEMO_INSTALL_PATH . 'includes/class-component-enabler.php';
         
         // Admin interface
         if (is_admin()) {
