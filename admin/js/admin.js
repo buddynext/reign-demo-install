@@ -251,7 +251,8 @@ jQuery(document).ready(function($) {
                         
                         self.processImportStep('backup');
                     } else {
-                        self.handleImportError(response.data.message);
+                        var errorMsg = (response.data && response.data.message) ? response.data.message : 'Failed to preserve user session';
+                        self.handleImportError(errorMsg);
                     }
                 },
                 error: function() {
@@ -306,8 +307,20 @@ jQuery(document).ready(function($) {
                 },
                 timeout: 300000, // 5 minutes timeout
                 success: function(response) {
+                    // Ensure response has proper structure
+                    if (!response || typeof response !== 'object') {
+                        self.handleImportError('Invalid response from server');
+                        return;
+                    }
+                    
                     if (response.success) {
-                        self.addLog(response.data.message, response.data.warning ? 'warning' : 'success');
+                        // Check if data exists
+                        if (!response.data) {
+                            self.handleImportError('Invalid response data');
+                            return;
+                        }
+                        
+                        self.addLog(response.data.message || 'Step completed', response.data.warning ? 'warning' : 'success');
                         
                         if (response.data.next_step) {
                             setTimeout(function() {
@@ -317,7 +330,9 @@ jQuery(document).ready(function($) {
                             self.completeImport(response.data.redirect_url);
                         }
                     } else {
-                        self.handleImportError(response.data.message);
+                        // Handle error response
+                        var errorMsg = (response.data && response.data.message) ? response.data.message : 'Unknown error occurred';
+                        self.handleImportError(errorMsg);
                     }
                 },
                 error: function(xhr, status, error) {

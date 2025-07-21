@@ -49,6 +49,11 @@ class Reign_Demo_Install {
         // Load required files
         $this->load_dependencies();
         
+        // Load CLI command if WP-CLI is available
+        if (defined('WP_CLI') && WP_CLI) {
+            require_once REIGN_DEMO_INSTALL_PATH . 'includes/class-cli-command.php';
+        }
+        
         // Initialize hooks
         add_action('init', array($this, 'load_textdomain'));
         add_action('admin_menu', array($this, 'add_admin_menu'));
@@ -189,12 +194,16 @@ class Reign_Demo_Install {
     }
     
     public function admin_notices() {
+        // Include the theme checker class if not already loaded
+        if (!class_exists('Reign_Theme_Checker')) {
+            require_once REIGN_DEMO_INSTALL_PATH . 'includes/class-theme-checker.php';
+        }
+        
         // Check if Reign theme is active
-        $theme = wp_get_theme();
-        if ($theme->get('Name') !== 'Reign' && $theme->get('Template') !== 'reign') {
+        if (!Reign_Theme_Checker::is_reign_theme_active()) {
             ?>
             <div class="notice notice-warning">
-                <p><?php _e('Reign Demo Install requires the Reign theme to be active. Please activate Reign theme first.', 'reign-demo-install'); ?></p>
+                <p><?php echo esc_html(Reign_Theme_Checker::get_inactive_message('admin_notice')); ?></p>
             </div>
             <?php
         }

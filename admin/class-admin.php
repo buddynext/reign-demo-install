@@ -61,20 +61,18 @@ class Reign_Demo_Install_Admin {
         // Don't use transients - they cause issues
         // Following Wbcom's simpler approach
         
-        // Check theme
-        $theme = wp_get_theme();
-        $theme_name = strtolower($theme->get('Name'));
-        $theme_template = strtolower($theme->get('Template'));
-        $theme_stylesheet = strtolower($theme->get_stylesheet());
+        // Include the theme checker class if not already loaded
+        if (!class_exists('Reign_Theme_Checker')) {
+            require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-theme-checker.php';
+        }
         
-        // Check if it's Reign theme (case-insensitive)
-        if (!in_array('reign', array($theme_name, $theme_template, $theme_stylesheet)) && 
-            !in_array('reign-theme', array($theme_name, $theme_template, $theme_stylesheet))) {
+        // Check theme
+        if (!Reign_Theme_Checker::is_reign_theme_active()) {
             ?>
             <div class="notice notice-error">
                 <p>
                     <strong><?php _e('Theme Not Active', 'reign-demo-install'); ?></strong>
-                    <?php _e('Reign theme must be active to use demo installer. Please activate Reign theme first.', 'reign-demo-install'); ?>
+                    <?php echo esc_html(Reign_Theme_Checker::get_inactive_message('requirements')); ?>
                 </p>
             </div>
             <?php

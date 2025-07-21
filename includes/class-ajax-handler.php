@@ -11,6 +11,14 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Required includes
+require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-demo-browser.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-file-importer.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-content-importer.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-settings-importer.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-plugin-installer.php';
+require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-user-preserver.php';
+
 class Reign_Demo_Install_Ajax_Handler {
     
     /**
@@ -95,8 +103,10 @@ class Reign_Demo_Install_Ajax_Handler {
         @ini_set('max_execution_time', 600);
         @ini_set('memory_limit', '512M');
         
-        // TEMPORARY: More lenient security check
-        // Still verify user can manage options for security
+        // Verify nonce for security
+        if (!check_ajax_referer('reign_demo_install_nonce', 'nonce', false)) {
+            wp_send_json_error(array('message' => __('Security check failed', 'reign-demo-install')));
+        }
         
         // Log for debugging
         if (defined('WP_DEBUG') && WP_DEBUG) {
@@ -134,6 +144,9 @@ class Reign_Demo_Install_Ajax_Handler {
         // Set longer execution time
         @set_time_limit(300);
         
+        // Start output buffering to catch any unexpected output
+        ob_start();
+        
         // Process based on step
         switch ($step) {
             case 'backup':
@@ -165,6 +178,7 @@ class Reign_Demo_Install_Ajax_Handler {
                 break;
                 
             default:
+                ob_end_clean();
                 wp_send_json_error(array('message' => __('Invalid import step', 'reign-demo-install')));
         }
     }
@@ -232,12 +246,22 @@ class Reign_Demo_Install_Ajax_Handler {
      * Process download step
      */
     private function process_download_step($demo_id) {
+        error_log('Download Step - Starting for demo: ' . $demo_id);
+        
+        // Initialize WordPress filesystem
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        WP_Filesystem();
+        
         $demo_browser = new Reign_Demo_Browser();
         $demo = $demo_browser->get_demo_by_id($demo_id);
         
         if (!$demo) {
+            error_log('Download Step - Demo not found: ' . $demo_id);
+            ob_end_clean();
             wp_send_json_error(array('message' => __('Demo not found', 'reign-demo-install')));
         }
+        
+        error_log('Download Step - Demo found, proceeding with download');
         
         // Create temp directory
         $temp_dir = WP_CONTENT_DIR . '/reign-demo-temp/';
@@ -260,17 +284,23 @@ class Reign_Demo_Install_Ajax_Handler {
         
         foreach ($files_to_download as $filename => $url) {
             if (empty($url)) {
+                error_log('Download Step - Skipping ' . $filename . ' (no URL)');
                 continue; // Skip if URL not provided
             }
+            
+            error_log('Download Step - Downloading ' . $filename . ' from: ' . $url);
             
             $local_file = $demo_dir . $filename;
             $download_result = $this->download_file($url, $local_file);
             
             if (is_wp_error($download_result)) {
+                error_log('Download Step - Failed to download ' . $filename . ': ' . $download_result->get_error_message());
                 wp_send_json_error(array(
                     'message' => sprintf(__('Failed to download %s: %s', 'reign-demo-install'), $filename, $download_result->get_error_message())
                 ));
             }
+            
+            error_log('Download Step - Successfully downloaded ' . $filename);
         }
         
         // Extract content package
@@ -284,6 +314,11 @@ class Reign_Demo_Install_Ajax_Handler {
                     'message' => sprintf(__('Failed to extract package: %s', 'reign-demo-install'), $unzip_result->get_error_message())
                 ));
             }
+        }
+        
+        // Clean any output before sending JSON
+        if (ob_get_level()) {
+            ob_end_clean();
         }
         
         wp_send_json_success(array(
@@ -352,6 +387,11 @@ class Reign_Demo_Install_Ajax_Handler {
             $message_parts[] = sprintf(__('Failed: %d', 'reign-demo-install'), count($results['failed']));
         }
         
+        // Clean any output before sending JSON
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+        
         wp_send_json_success(array(
             'message' => implode(', ', $message_parts),
             'results' => $results,
@@ -363,27 +403,58 @@ class Reign_Demo_Install_Ajax_Handler {
      * Process content step
      */
     private function process_content_step($demo_id, $options) {
+        error_log('Content Step - Starting for demo: ' . $demo_id);
+        
         // No auth manipulation needed - following Wbcom's simpler approach
         
         $temp_dir = WP_CONTENT_DIR . '/reign-demo-temp/';
         $demo_dir = $temp_dir . $demo_id . '/extracted/';
         $content_file = $demo_dir . 'content.json';
+        
+        error_log('Content Step - Looking for content file: ' . $content_file);
         $export_info_file = $demo_dir . 'export-info.json';
         $database_dir = $demo_dir . 'database/';
         
+        // Test if we can send JSON at all
+        if (isset($_REQUEST['test_response'])) {
+            error_log('Content Step - Test response requested');
+            if (ob_get_level()) {
+                ob_end_clean();
+            }
+            wp_send_json_success(array('message' => 'Test response OK', 'step' => 'content'));
+            return;
+        }
+        
         // Check which type of export we have
-        if (file_exists($export_info_file) && file_exists($database_dir)) {
+        if (file_exists($export_info_file) && is_dir($database_dir)) {
+            error_log('Content Step - Export info file found, checking type');
             // SQL-based export
             $export_info = json_decode(file_get_contents($export_info_file), true);
             
             if (isset($export_info['export_type']) && $export_info['export_type'] === 'sql') {
+                error_log('Content Step - SQL export detected, database dir exists: ' . (is_dir($database_dir) ? 'yes' : 'no'));
+                
                 // Use SQL importer
                 $results = $this->import_sql_content($demo_id, $options);
                 
                 if (is_wp_error($results)) {
+                    error_log('Content Step - SQL import error: ' . $results->get_error_message());
+                    
+                    // Clean output buffer before sending error
+                    if (ob_get_level()) {
+                        ob_end_clean();
+                    }
+                    
                     wp_send_json_error(array(
                         'message' => $results->get_error_message()
                     ));
+                }
+                
+                error_log('Content Step - SQL import successful');
+                
+                // Clean output buffer before sending success
+                if (ob_get_level()) {
+                    ob_end_clean();
                 }
                 
                 wp_send_json_success(array(
@@ -434,18 +505,32 @@ class Reign_Demo_Install_Ajax_Handler {
     private function import_sql_content($demo_id, $options) {
         global $wpdb;
         
+        error_log('SQL Import - Starting for demo: ' . $demo_id);
+        
         // Increase time limit for SQL import
-        @set_time_limit(600);
-        @ini_set('memory_limit', '512M');
+        @set_time_limit(0); // No time limit
+        @ini_set('memory_limit', '1024M'); // Increase memory limit
+        @ini_set('max_execution_time', '0');
         
-        $temp_dir = WP_CONTENT_DIR . '/reign-demo-temp/';
+        // Add error handler to catch fatal errors
+        register_shutdown_function(function() {
+            $error = error_get_last();
+            if ($error && ($error['type'] === E_ERROR || $error['type'] === E_PARSE)) {
+                error_log('SQL Import - Fatal error: ' . $error['message'] . ' in ' . $error['file'] . ':' . $error['line']);
+            }
+        });
         
-        // Check for database files in extracted directory
-        $database_dir = $temp_dir . $demo_id . '/extracted/database/';
-        
-        if (!is_dir($database_dir)) {
-            return new WP_Error('no_database_dir', __('Database directory not found', 'reign-demo-install'));
-        }
+        try {
+            $temp_dir = WP_CONTENT_DIR . '/reign-demo-temp/';
+            
+            // Check for database files in extracted directory
+            $database_dir = $temp_dir . $demo_id . '/extracted/database/';
+            
+            error_log('SQL Import - Looking for database dir: ' . $database_dir);
+            
+            if (!is_dir($database_dir)) {
+                return new WP_Error('no_database_dir', __('Database directory not found', 'reign-demo-install'));
+            }
         
         $import_order_file = $database_dir . 'import-order.json';
         
@@ -462,6 +547,11 @@ class Reign_Demo_Install_Ajax_Handler {
         if ($current_user_id > 0) {
             $preserve_user_caps = true;
         }
+        
+        // IMPORTANT: Store current theme settings to restore after import
+        $current_stylesheet = get_option('stylesheet');
+        $current_template = get_option('template');
+        error_log('SQL Import - Current theme before import: stylesheet=' . $current_stylesheet . ', template=' . $current_template);
         
         if (!file_exists($import_order_file)) {
             // If no import order, try to import all SQL files
@@ -501,6 +591,9 @@ class Reign_Demo_Install_Ajax_Handler {
         // Disable foreign key checks
         $wpdb->query('SET foreign_key_checks = 0');
         
+        // Ensure plugin tables exist before import
+        $this->ensure_plugin_tables_exist();
+        
         // Define critical tables that need special handling
         $critical_tables = array(
             $wpdb->options,
@@ -508,39 +601,8 @@ class Reign_Demo_Install_Ajax_Handler {
             $wpdb->usermeta
         );
         
-        // Store critical options to preserve
-        $preserve_options = array(
-            'siteurl',
-            'home', 
-            'blogname',
-            'blogdescription',
-            'users_can_register',
-            'admin_email',
-            'default_role',
-            'active_plugins',
-            'template',
-            'stylesheet',
-            'current_theme',
-            'rewrite_rules',
-            'permalink_structure',
-            // Session and auth related
-            '_site_transient_timeout_theme_roots',
-            '_site_transient_theme_roots',
-            'auth_key',
-            'auth_salt',
-            'logged_in_key',
-            'logged_in_salt',
-            'nonce_key',
-            'nonce_salt',
-            // Preserve our import flags
-            'reign_demo_current_admin_id',
-            'reign_demo_current_admin_login'
-        );
-        
-        $preserved_options = array();
-        foreach ($preserve_options as $option_name) {
-            $preserved_options[$option_name] = get_option($option_name);
-        }
+        // Following Wbcom approach - we don't delete options, so no need to preserve them
+        // Options are handled specially during import using update_option()
         
         foreach ($all_files as $file) {
             $table_name = $this->get_table_name_from_file($file);
@@ -553,23 +615,65 @@ class Reign_Demo_Install_Ajax_Handler {
             )) > 0;
             
             if (!$table_exists) {
-                // Skip tables that don't exist
-                $results['skipped']++;
-                continue;
+                // Table doesn't exist - we need to create it from the SQL file
+                // This is important for demo imports to work with all plugin data
+                error_log("Table $table_name doesn't exist, will create it from SQL file");
+                
+                // Read the SQL file to get CREATE TABLE statement
+                if (substr($file, -3) === '.gz') {
+                    $sql_content = gzdecode(file_get_contents($file));
+                } else {
+                    $sql_content = file_get_contents($file);
+                }
+                
+                // Extract CREATE TABLE statement (may include DROP TABLE IF EXISTS)
+                $create_pattern = '/(?:DROP\s+TABLE\s+IF\s+EXISTS\s+[`\'"]?' . preg_quote($table_name) . '[`\'"]?\s*;\s*)?' .
+                                  'CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?[`\'"]?' . preg_quote($table_name) . '[`\'"]?\s*\([^;]+\)\s*[^;]*;/is';
+                
+                if (preg_match($create_pattern, $sql_content, $matches)) {
+                    $create_statements = $matches[0];
+                    
+                    // Split and execute statements
+                    $statements = array_filter(explode(';', $create_statements));
+                    foreach ($statements as $stmt) {
+                        $stmt = trim($stmt);
+                        if (!empty($stmt)) {
+                            $result = $wpdb->query($stmt);
+                            if ($result === false) {
+                                error_log("Failed to execute: $stmt - Error: " . $wpdb->last_error);
+                                $results['errors'][] = "Failed to create table $table_name: " . $wpdb->last_error;
+                                $results['skipped']++;
+                                continue 2; // Skip to next file
+                            }
+                        }
+                    }
+                    error_log("Successfully created table $table_name");
+                } else {
+                    // No CREATE TABLE found in the file, skip
+                    error_log("No CREATE TABLE statement found for $table_name in SQL file");
+                    $results['skipped']++;
+                    continue;
+                }
             }
             
             // Handle tables differently based on type
             if (in_array($table_name, $critical_tables)) {
                 if ($table_name === $wpdb->options) {
-                    // For options table, delete non-critical options only
-                    $wpdb->query("DELETE FROM `{$table_name}` WHERE option_name NOT IN ('" . implode("','", $preserve_options) . "')");
+                    // NEVER DELETE FROM OPTIONS TABLE - Following Wbcom approach
+                    // We'll handle options specially during import
                 } elseif ($table_name === $wpdb->users || $table_name === $wpdb->usermeta) {
                     // For user tables, we'll handle them specially after import
                     // Skip truncating, we'll merge the data
                 }
             } else {
                 // For all other tables, truncate before import
+                error_log("SQL Import - Truncating table: $table_name for full import");
                 $wpdb->query("TRUNCATE TABLE `{$table_name}`");
+                
+                // Special debug for posts table
+                if ($table_name === $wpdb->posts) {
+                    error_log("SQL Import - POSTS TABLE: Truncated, will do full import from SQL file");
+                }
             }
             
             // Import the SQL file
@@ -590,12 +694,7 @@ class Reign_Demo_Install_Ajax_Handler {
         // Re-enable foreign key checks
         $wpdb->query('SET foreign_key_checks = 1');
         
-        // Restore preserved options
-        foreach ($preserved_options as $option_name => $option_value) {
-            if ($option_value !== false) {
-                update_option($option_name, $option_value);
-            }
-        }
+        // No need to restore options since we never delete them - following Wbcom approach
         
         // Fix current user's capabilities if table prefix changed
         if ($preserve_user_caps && $current_user_id > 0) {
@@ -643,7 +742,129 @@ class Reign_Demo_Install_Ajax_Handler {
             return new WP_Error('import_errors', implode(', ', $results['errors']));
         }
         
+        error_log('SQL Import - Completed successfully. Imported: ' . $results['imported'] . ', Skipped: ' . $results['skipped']);
+        
+        if (!empty($results['errors'])) {
+            error_log('SQL Import - Errors encountered: ' . implode(', ', $results['errors']));
+        }
+        
+        // CRITICAL: Verify important options are still set after import
+        $verify_options = array(
+            'stylesheet' => get_option('stylesheet'),
+            'template' => get_option('template'),
+            'active_plugins' => get_option('active_plugins'),
+            'page_on_front' => get_option('page_on_front'),
+            'show_on_front' => get_option('show_on_front')
+        );
+        
+        error_log('SQL Import - Final option verification:');
+        foreach ($verify_options as $opt => $val) {
+            if ($opt === 'active_plugins' && is_array($val)) {
+                error_log('  ' . $opt . ': ' . count($val) . ' plugins');
+            } else {
+                error_log('  ' . $opt . ': ' . ($val ?: 'empty'));
+            }
+        }
+        
+        // If theme is not set, try to restore or set Reign theme
+        if (empty($verify_options['stylesheet']) || empty($verify_options['template'])) {
+            error_log('SQL Import - Theme options are empty! Attempting to set Reign theme...');
+            
+            // Try to find and set Reign theme
+            $themes = wp_get_themes();
+            foreach ($themes as $theme_slug => $theme_obj) {
+                if (stripos($theme_obj->get('Name'), 'reign') !== false) {
+                    update_option('stylesheet', $theme_slug);
+                    update_option('template', $theme_slug);
+                    error_log('SQL Import - Set theme to: ' . $theme_slug);
+                    break;
+                }
+            }
+        }
+        
+        // CRITICAL: Ensure menu locations are set in global options (not just theme_mods)
+        $this->ensure_menu_locations_set();
+        
         return $results;
+        
+        } catch (Exception $e) {
+            error_log('SQL Import - Exception caught: ' . $e->getMessage());
+            return new WP_Error('import_exception', $e->getMessage());
+        }
+    }
+    
+    /**
+     * Ensure menu locations are properly set in global options
+     */
+    private function ensure_menu_locations_set() {
+        // Get menu locations from theme_mods
+        $theme_mods = get_theme_mods();
+        if (isset($theme_mods['nav_menu_locations']) && !empty($theme_mods['nav_menu_locations'])) {
+            // Set nav_menu_locations in global options
+            update_option('nav_menu_locations', $theme_mods['nav_menu_locations']);
+            error_log('SQL Import - Set nav_menu_locations: ' . json_encode($theme_mods['nav_menu_locations']));
+        }
+        
+        // Ensure all nav_menu_item posts are properly assigned to their menus
+        $this->fix_menu_item_assignments();
+    }
+    
+    /**
+     * Fix menu item assignments and ensure they're linked to correct menus
+     */
+    private function fix_menu_item_assignments() {
+        global $wpdb;
+        
+        // Get all nav_menu_item posts
+        $menu_items = $wpdb->get_results("
+            SELECT ID, post_excerpt, post_parent, menu_order 
+            FROM {$wpdb->posts} 
+            WHERE post_type = 'nav_menu_item' 
+            AND post_status = 'publish'
+            ORDER BY menu_order
+        ");
+        
+        error_log('SQL Import - Found ' . count($menu_items) . ' nav_menu_item posts');
+        
+        if (empty($menu_items)) {
+            error_log('SQL Import - No nav_menu_item posts found - this needs to be fixed!');
+            return;
+        }
+        
+        // Get all nav_menu terms
+        $menu_terms = $wpdb->get_results("
+            SELECT t.term_id, t.name, t.slug
+            FROM {$wpdb->terms} t
+            INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+            WHERE tt.taxonomy = 'nav_menu'
+        ");
+        
+        error_log('SQL Import - Found ' . count($menu_terms) . ' nav_menu terms');
+        
+        // Ensure menu items are properly linked to menu terms
+        foreach ($menu_items as $item) {
+            // Check if item is properly assigned to a menu
+            $menu_assignment = $wpdb->get_var($wpdb->prepare("
+                SELECT COUNT(*) 
+                FROM {$wpdb->term_relationships} tr
+                INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+                WHERE tr.object_id = %d AND tt.taxonomy = 'nav_menu'
+            ", $item->ID));
+            
+            if ($menu_assignment == 0) {
+                error_log('SQL Import - Menu item ' . $item->ID . ' not assigned to any menu!');
+                // Try to assign it to a default menu
+                if (!empty($menu_terms)) {
+                    $default_menu = $menu_terms[0];
+                    wp_set_object_terms($item->ID, array($default_menu->term_id), 'nav_menu');
+                    error_log('SQL Import - Assigned item ' . $item->ID . ' to menu ' . $default_menu->name);
+                }
+            }
+        }
+        
+        // Refresh menu cache
+        wp_cache_delete('all_nav_menus', 'nav_menu');
+        delete_transient('nav_menu_locations');
     }
     
     /**
@@ -722,25 +943,166 @@ class Reign_Demo_Install_Ajax_Handler {
                 $statement = preg_replace('/INSERT\s+INTO/i', 'INSERT IGNORE INTO', $statement);
             }
             
-            // For options table, skip auth-related options entirely
+            // For options table - Following Wbcom approach: extract and use update_option()
             if ($is_options_table && stripos($statement, 'INSERT INTO') !== false) {
-                // Check if this is an auth-related option we should skip
-                $skip_options = array('auth_key', 'auth_salt', 'logged_in_key', 'logged_in_salt', 'nonce_key', 'nonce_salt');
-                $should_skip = false;
-                
-                foreach ($skip_options as $skip_option) {
-                    if (strpos($statement, "'" . $skip_option . "'") !== false) {
-                        $should_skip = true;
-                        break;
+                // Parse the INSERT statement to extract option_name and option_value
+                if (preg_match('/INSERT\s+INTO\s+[`\'"]?\w+[`\'"]?\s*\([^)]+\)\s+VALUES\s*\(([^)]+)\)/i', $statement, $matches)) {
+                    $values = $matches[1];
+                    
+                    // Extract option_name and option_value from the VALUES part
+                    // This regex handles escaped quotes within values
+                    if (preg_match_all("/'(?:[^'\\\\]|\\\\.)*'|[^,]+/", $values, $value_matches)) {
+                        $extracted_values = array_map(function($v) {
+                            return trim(trim($v), "'");
+                        }, $value_matches[0]);
+                        
+                        if (count($extracted_values) >= 3) {
+                            $option_name = stripslashes($extracted_values[1]); // option_name is second column
+                            $option_value = stripslashes($extracted_values[2]); // option_value is third column
+                            $autoload = isset($extracted_values[3]) ? $extracted_values[3] : 'yes';
+                            
+                            // Skip list - only truly site-specific options
+                            $skip_options = array(
+                                // Site URLs - must remain site-specific
+                                'siteurl',
+                                'home',
+                                
+                                // Admin email - site-specific
+                                'admin_email',
+                                'new_admin_email',
+                                
+                                // Upload paths - server-specific
+                                'upload_path',
+                                'upload_url_path',
+                                'uploads_use_yearmonth_folders',
+                                
+                                // Database version - shouldn't change
+                                'db_version',
+                                'initial_db_version',
+                                
+                                // Security keys - must remain site-specific
+                                'auth_key', 'auth_salt', 'logged_in_key', 'logged_in_salt',
+                                'nonce_key', 'nonce_salt', 'secure_auth_key', 'secure_auth_salt',
+                                
+                                // Cron jobs - site-specific
+                                'cron',
+                                
+                                // Rewrite rules - will be regenerated
+                                'rewrite_rules',
+                                
+                                // User roles - keep existing
+                                'wp_user_roles',
+                                
+                                // Mailserver settings - site-specific
+                                'mailserver_url',
+                                'mailserver_login',
+                                'mailserver_pass',
+                                'mailserver_port'
+                            );
+                            
+                            // Skip if it's in the skip list or is a transient/session
+                            if (in_array($option_name, $skip_options) ||
+                                strpos($option_name, '_transient_') !== false ||
+                                strpos($option_name, '_site_transient_') !== false ||
+                                strpos($option_name, 'wordpress_logged_in_') !== false ||
+                                strpos($option_name, 'wordpress_auth_') !== false ||
+                                strpos($option_name, 'wp_user_settings') !== false ||
+                                strpos($option_name, 'reign_demo_current_admin_') !== false) {
+                                continue; // Skip this option
+                            }
+                            
+                            // Special handling for theme mods to ensure they work with current theme
+                            if (strpos($option_name, 'theme_mods_') === 0) {
+                                // Store the imported theme name for later
+                                $imported_theme = str_replace('theme_mods_', '', $option_name);
+                                
+                                // Get the current active theme - but it might be empty during import
+                                $current_theme = get_option('stylesheet');
+                                
+                                // If current theme is empty or being imported, use reign-theme as default
+                                if (empty($current_theme) || $current_theme === $imported_theme) {
+                                    // Look for any Reign theme that's installed
+                                    $themes = wp_get_themes();
+                                    foreach ($themes as $theme_slug => $theme_obj) {
+                                        if (stripos($theme_obj->get('Name'), 'reign') !== false) {
+                                            $current_theme = $theme_slug;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    // Fallback to reign-theme if nothing found
+                                    if (empty($current_theme)) {
+                                        $current_theme = 'reign-theme';
+                                    }
+                                }
+                                
+                                // Always import theme mods to the target theme
+                                $option_name = 'theme_mods_' . $current_theme;
+                                
+                                error_log('SQL Import - Importing theme mods from ' . $imported_theme . ' to ' . $current_theme);
+                            }
+                            
+                            // Unserialize if needed and update URLs
+                            $option_value = maybe_unserialize($option_value);
+                            if (is_array($option_value) || is_object($option_value)) {
+                                $option_value = $this->replace_urls_in_data($option_value);
+                            } elseif (is_string($option_value)) {
+                                $option_value = str_replace('{{*home_url}}', home_url(), $option_value);
+                            }
+                            
+                            // Special handling for theme_mods - merge instead of replace
+                            if (strpos($option_name, 'theme_mods_') === 0) {
+                                $existing_mods = get_option($option_name, array());
+                                if (is_array($existing_mods) && is_array($option_value)) {
+                                    // Merge the imported mods with existing ones
+                                    // Imported values take precedence
+                                    $merged_mods = array_merge($existing_mods, $option_value);
+                                    update_option($option_name, $merged_mods, $autoload);
+                                    error_log('SQL Import - Merged theme mods for ' . $option_name . '. Keys: ' . implode(', ', array_keys($option_value)));
+                                } else {
+                                    // Not arrays, just update normally
+                                    update_option($option_name, $option_value, $autoload);
+                                }
+                            } else {
+                                // Use update_option instead of direct SQL - this is the Wbcom way
+                                update_option($option_name, $option_value, $autoload);
+                            }
+                            
+                            // Log important options for debugging
+                            if (strpos($option_name, 'widget_') === 0 || 
+                                strpos($option_name, 'theme_mods_') === 0 || 
+                                $option_name === 'sidebars_widgets' ||
+                                $option_name === 'nav_menu_locations' ||
+                                $option_name === 'stylesheet' ||
+                                $option_name === 'template' ||
+                                $option_name === 'active_plugins' ||
+                                $option_name === 'page_on_front' ||
+                                $option_name === 'show_on_front') {
+                                error_log('Reign Demo Import - Imported option: ' . $option_name . ' (size: ' . strlen(serialize($option_value)) . ' bytes)');
+                                
+                                // Special logging for critical options
+                                if ($option_name === 'active_plugins' && is_array($option_value)) {
+                                    error_log('Reign Demo Import - Active plugins: ' . implode(', ', $option_value));
+                                } elseif (in_array($option_name, array('stylesheet', 'template', 'page_on_front', 'show_on_front'))) {
+                                    error_log('Reign Demo Import - ' . $option_name . ' = ' . $option_value);
+                                }
+                            }
+                        }
                     }
                 }
-                
-                if ($should_skip) {
-                    continue; // Skip auth options entirely
+                continue; // Skip executing the original SQL
+            }
+            
+            // Debug posts table imports
+            if ($table_name === $wpdb->posts && stripos($statement, 'INSERT INTO') !== false) {
+                // Count nav_menu_item posts in this statement
+                if (stripos($statement, "'nav_menu_item'") !== false) {
+                    error_log("SQL Import - POSTS: Found nav_menu_item INSERT statement");
                 }
-                
-                // For other options, use REPLACE
-                $statement = preg_replace('/INSERT\s+INTO/i', 'REPLACE INTO', $statement);
+                // Log general post insert info
+                if (preg_match_all("/INSERT INTO.*?VALUES/i", $statement, $matches)) {
+                    error_log("SQL Import - POSTS: Processing " . count($matches[0]) . " INSERT statements");
+                }
             }
             
             // Execute the statement
@@ -1695,6 +2057,47 @@ class Reign_Demo_Install_Ajax_Handler {
             return str_replace($old_prefix, $new_prefix, $data);
         }
         
+        return $data;
+    }
+    
+    /**
+     * Ensure plugin tables exist before import
+     */
+    private function ensure_plugin_tables_exist() {
+        // Trigger BuddyPress/BuddyBoss table creation if needed
+        if (function_exists('bp_core_install')) {
+            bp_core_install();
+        }
+        
+        // Trigger bbPress table creation if needed
+        if (class_exists('BBP_Admin')) {
+            bbp_setup_updater();
+        }
+        
+        // Trigger WooCommerce table creation if needed
+        if (class_exists('WC_Install')) {
+            WC_Install::check_version();
+        }
+        
+        // Allow other plugins to create their tables
+        do_action('reign_demo_ensure_tables_exist');
+    }
+    
+    /**
+     * Replace URLs in data recursively
+     */
+    private function replace_urls_in_data($data) {
+        if (is_string($data)) {
+            return str_replace('{{*home_url}}', home_url(), $data);
+        } elseif (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = $this->replace_urls_in_data($value);
+            }
+        } elseif (is_object($data)) {
+            foreach ($data as $key => $value) {
+                $data->$key = $this->replace_urls_in_data($value);
+            }
+        }
         return $data;
     }
     

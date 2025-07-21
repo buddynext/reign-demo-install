@@ -147,17 +147,22 @@ class Reign_Demo_Requirements_Checker {
      * Check if Reign theme is active
      */
     private function check_reign_theme() {
-        $theme = wp_get_theme();
-        $is_reign = ($theme->get('Name') === 'Reign' || $theme->get('Template') === 'reign');
+        // Include the theme checker class if not already loaded
+        if (!class_exists('Reign_Theme_Checker')) {
+            require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-theme-checker.php';
+        }
+        
+        $is_reign = Reign_Theme_Checker::is_reign_theme_active();
+        $theme_info = Reign_Theme_Checker::get_theme_info();
         
         if (!$is_reign) {
-            $this->errors[] = __('Reign theme must be active to import demos.', 'reign-demo-install');
+            $this->errors[] = Reign_Theme_Checker::get_inactive_message('demo_install');
         }
         
         return array(
             'label' => __('Reign Theme', 'reign-demo-install'),
             'required' => __('Active', 'reign-demo-install'),
-            'current' => $is_reign ? __('Active', 'reign-demo-install') : $theme->get('Name'),
+            'current' => $is_reign ? __('Active', 'reign-demo-install') : $theme_info['name'],
             'passed' => $is_reign
         );
     }
