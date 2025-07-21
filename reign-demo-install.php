@@ -70,6 +70,7 @@ class Reign_Demo_Install {
         add_action('wp_ajax_reign_demo_download_demo', array($this, 'ajax_download_demo'));
         add_action('wp_ajax_reign_demo_check_plugins', array($this, 'ajax_check_plugins'));
         add_action('wp_ajax_reign_demo_install_plugins', array($this, 'ajax_install_plugins'));
+        add_action('wp_ajax_reign_demo_keep_alive', array($this, 'ajax_keep_alive'));
         
         // Activation/Deactivation hooks
         register_activation_hook(__FILE__, array($this, 'activate'));
@@ -262,6 +263,11 @@ class Reign_Demo_Install {
     public function ajax_install_plugins() {
         $ajax_handler = new Reign_Demo_Install_Ajax_Handler();
         $ajax_handler->install_plugins();
+    }
+    
+    public function ajax_keep_alive() {
+        $ajax_handler = new Reign_Demo_Install_Ajax_Handler();
+        $ajax_handler->keep_session_alive();
     }
     
     // Activation

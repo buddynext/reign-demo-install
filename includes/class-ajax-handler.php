@@ -103,6 +103,9 @@ class Reign_Demo_Install_Ajax_Handler {
         @ini_set('max_execution_time', 600);
         @ini_set('memory_limit', '512M');
         
+        // CRITICAL: Refresh auth cookie to prevent session timeout
+        $this->refresh_auth_cookie();
+        
         // Verify nonce for security
         if (!check_ajax_referer('reign_demo_install_nonce', 'nonce', false)) {
             wp_send_json_error(array('message' => __('Security check failed', 'reign-demo-install')));
@@ -667,12 +670,20 @@ class Reign_Demo_Install_Ajax_Handler {
                     $sql_content = file_get_contents($file);
                 }
                 
-                // Extract CREATE TABLE statement (may include DROP TABLE IF EXISTS)
-                $create_pattern = '/(?:DROP\s+TABLE\s+IF\s+EXISTS\s+[`\'"]?' . preg_quote($table_name) . '[`\'"]?\s*;\s*)?' .
-                                  'CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?[`\'"]?' . preg_quote($table_name) . '[`\'"]?\s*\([^;]+\)\s*[^;]*;/is';
+                // Extract CREATE TABLE statement (skip any DROP TABLE statements)
+                $create_pattern = '/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?[`\'"]?' . preg_quote($table_name) . '[`\'"]?\s*\([^;]+\)\s*[^;]*;/is';
                 
                 if (preg_match($create_pattern, $sql_content, $matches)) {
                     $create_statements = $matches[0];
+                    
+                    // Ensure CREATE TABLE uses IF NOT EXISTS
+                    if (!preg_match('/IF\s+NOT\s+EXISTS/i', $create_statements)) {
+                        $create_statements = preg_replace(
+                            '/(CREATE\s+TABLE\s+)([`\'"]?' . preg_quote($table_name) . '[`\'"]?)/i',
+                            '$1IF NOT EXISTS $2',
+                            $create_statements
+                        );
+                    }
                     
                     // Split and execute statements
                     $statements = array_filter(explode(';', $create_statements));
@@ -954,6 +965,23 @@ class Reign_Demo_Install_Ajax_Handler {
             $statement = trim($statement);
             if (empty($statement)) {
                 continue;
+            }
+            
+            // CRITICAL: Skip DROP TABLE statements to preserve existing tables
+            if (preg_match('/^\s*DROP\s+TABLE\s+/i', $statement)) {
+                error_log("Skipping DROP TABLE statement to preserve existing data");
+                continue;
+            }
+            
+            // CRITICAL: Modify CREATE TABLE to use IF NOT EXISTS
+            if (preg_match('/^\s*CREATE\s+TABLE\s+(?!IF\s+NOT\s+EXISTS)/i', $statement)) {
+                // Add IF NOT EXISTS to CREATE TABLE statements that don't have it
+                $statement = preg_replace(
+                    '/^(\s*CREATE\s+TABLE\s+)([`\'"]?\w+[`\'"]?)/i',
+                    '$1IF NOT EXISTS $2',
+                    $statement
+                );
+                error_log("Modified CREATE TABLE to use IF NOT EXISTS");
             }
             
             // For user tables, ALWAYS skip current user's data
@@ -2162,5 +2190,57 @@ class Reign_Demo_Install_Ajax_Handler {
         }
         
         rmdir($dir);
+    }
+    
+    /**
+     * Refresh auth cookie to prevent session timeout
+     */
+    private function refresh_auth_cookie() {
+        $current_user = wp_get_current_user();
+        if ($current_user->ID > 0) {
+            // Extend the auth cookie expiration
+            $expiration = time() + (2 * HOUR_IN_SECONDS); // 2 hours
+            $secure = is_ssl();
+            
+            // Set auth cookies with extended expiration
+            wp_set_auth_cookie($current_user->ID, true, $secure);
+            
+            // Also update the logged_in cookie
+            $logged_in_cookie = wp_generate_auth_cookie($current_user->ID, $expiration, 'logged_in');
+            setcookie(LOGGED_IN_COOKIE, $logged_in_cookie, $expiration, COOKIEPATH, COOKIE_DOMAIN, $secure, true);
+            
+            // Store session refresh time
+            update_user_meta($current_user->ID, 'reign_demo_last_session_refresh', time());
+        }
+    }
+    
+    /**
+     * Keep session alive during import
+     */
+    public function keep_session_alive() {
+        // Verify nonce for security
+        if (!check_ajax_referer('reign_demo_install_nonce', 'nonce', false)) {
+            wp_send_json_error(array('message' => __('Security check failed', 'reign-demo-install')));
+        }
+        
+        // Check if user is logged in
+        if (!is_user_logged_in()) {
+            wp_send_json_error(array('message' => __('Session expired', 'reign-demo-install')));
+        }
+        
+        // Refresh the auth cookie
+        $this->refresh_auth_cookie();
+        
+        // Return success with user info
+        $current_user = wp_get_current_user();
+        wp_send_json_success(array(
+            'message' => __('Session refreshed', 'reign-demo-install'),
+            'user' => array(
+                'id' => $current_user->ID,
+                'login' => $current_user->user_login,
+                'display_name' => $current_user->display_name
+            ),
+            'timestamp' => time()
+        ));
     }
 }

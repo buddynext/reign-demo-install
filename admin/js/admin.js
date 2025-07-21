@@ -10,6 +10,7 @@ jQuery(document).ready(function($) {
         currentDemo: null,
         importInProgress: false,
         sessionCheckInterval: null,
+        keepAliveInterval: null,
         
         init: function() {
             this.bindEvents();
@@ -224,6 +225,9 @@ jQuery(document).ready(function($) {
             
             this.updateProgress(0, 'Preparing import...');
             
+            // Start session keep-alive
+            this.startKeepAlive();
+            
             // Start with user preservation
             this.preserveUser();
         },
@@ -398,6 +402,7 @@ jQuery(document).ready(function($) {
         
         handleImportError: function(message) {
             this.importInProgress = false;
+            this.stopKeepAlive(); // Stop session keep-alive
             this.addLog('Error: ' + message, 'error');
             $('.reign-start-import').prop('disabled', false).text('Retry Import');
             alert(reign_demo_install.messages.import_failed + '\n\n' + message);
@@ -405,6 +410,7 @@ jQuery(document).ready(function($) {
         
         completeImport: function(redirectUrl) {
             this.importInProgress = false;
+            this.stopKeepAlive(); // Stop session keep-alive
             this.updateProgress(100, 'Import completed!');
             this.addLog('Import completed successfully!', 'success');
             
@@ -660,6 +666,50 @@ jQuery(document).ready(function($) {
             
             $('.reign-plugin-requirements').hide();
             $('.reign-import-options').show();
+        },
+        
+        // Session keep-alive functionality
+        startKeepAlive: function() {
+            var self = this;
+            
+            // Clear any existing interval
+            if (this.keepAliveInterval) {
+                clearInterval(this.keepAliveInterval);
+            }
+            
+            // Send keep-alive request every 30 seconds during import
+            this.keepAliveInterval = setInterval(function() {
+                if (!self.importInProgress) {
+                    self.stopKeepAlive();
+                    return;
+                }
+                
+                $.ajax({
+                    url: reign_demo_install.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'reign_demo_keep_alive',
+                        nonce: reign_demo_install.nonce
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            console.log('Session refreshed at ' + new Date().toLocaleTimeString());
+                        } else {
+                            console.warn('Session refresh failed:', response.data.message);
+                        }
+                    },
+                    error: function() {
+                        console.error('Failed to refresh session');
+                    }
+                });
+            }, 30000); // Every 30 seconds
+        },
+        
+        stopKeepAlive: function() {
+            if (this.keepAliveInterval) {
+                clearInterval(this.keepAliveInterval);
+                this.keepAliveInterval = null;
+            }
         }
     };
     
